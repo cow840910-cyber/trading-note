@@ -273,42 +273,69 @@ function buildStats(){
 }
 
 // ── API Key Modal ──────────────────────────────────────────
+function getProvider(){return localStorage.getItem('api-provider')||'google';}
+function setProvider(p){localStorage.setItem('api-provider',p);}
+function getKeyAnt(){return localStorage.getItem('ant-key2')||'';}
+function setKeyAnt(k){localStorage.setItem('ant-key2',k);}
+
 function buildKeyModal(){
-  const k=getKey();
+  const prov=getProvider(),kg=getKey(),ka=getKeyAnt();
   return`<div class="m-bg"><div class="m-sheet">
     <div class="m-han"></div>
-    <div class="m-hd"><div class="m-hd-t">🔑 Google API Key 設定</div><button class="m-x" id="mX">×</button></div>
+    <div class="m-hd"><div class="m-hd-t">🔑 AI 分析設定</div><button class="m-x" id="mX">×</button></div>
     <div class="m-scr">
-      <div style="background:var(--gbg);border:.5px solid var(--gbr);border-radius:var(--rad);padding:12px 13px;margin-bottom:14px;font-size:13px;line-height:1.7;color:var(--g);">
-        ✅ <b>完全免費</b>，不需信用卡！<br>使用 Google Gemini AI 分析對帳單。
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:12px;font-weight:500;">選擇 AI 服務</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">
+        <button id="provG" style="padding:12px 8px;border-radius:var(--rad);border:.5px solid ${prov==='google'?'var(--b)':'var(--br2)'};background:${prov==='google'?'var(--bbg)':'none'};color:${prov==='google'?'var(--b)':'var(--tx2)'};font-size:12px;font-weight:${prov==='google'?'600':'400'};cursor:pointer;font-family:inherit;line-height:1.5;">
+          Google Gemini<br><span style="font-size:10px;opacity:.8;">免費（有限額）</span>
+        </button>
+        <button id="provA" style="padding:12px 8px;border-radius:var(--rad);border:.5px solid ${prov==='anthropic'?'var(--g)':'var(--br2)'};background:${prov==='anthropic'?'var(--gbg)':'none'};color:${prov==='anthropic'?'var(--g)':'var(--tx2)'};font-size:12px;font-weight:${prov==='anthropic'?'600':'400'};cursor:pointer;font-family:inherit;line-height:1.5;">
+          Anthropic Claude<br><span style="font-size:10px;opacity:.8;">穩定（$5可用半年）</span>
+        </button>
       </div>
-      <div style="font-size:13px;color:var(--tx2);line-height:1.8;margin-bottom:16px;">
-        <b>取得步驟：</b><br>
-        1. 點下方連結開啟 Google AI Studio<br>
-        2. 用 Google 帳號登入<br>
-        3. 點「Get API Key」→「Create API Key」<br>
-        4. 複製 <span style="font-family:monospace;">AIza...</span> 開頭的 Key 貼到下方
+
+      ${prov==='google'?`
+      <div style="background:var(--ybg);border:.5px solid var(--ybr);border-radius:var(--rad);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--y);line-height:1.6;">
+        ⚠️ 若出現 <b>429 錯誤</b>，需前往<br>
+        console.cloud.google.com 啟用帳單（需信用卡，但仍免費）
       </div>
-      <div class="field"><div class="fl">Google API Key</div>
-        <input type="text" id="keyInput" value="${esc(k)}" placeholder="AIzaSy..." style="font-family:'SF Mono',monospace;font-size:13px;">
+      <div class="field"><div class="fl">Google API Key（AIza...）</div>
+        <input type="text" id="keyInputG" value="${esc(kg)}" placeholder="AIzaSy..." style="font-family:'SF Mono',monospace;font-size:13px;"></div>
+      <button style="width:100%;padding:11px;background:var(--bbg);border:.5px solid var(--bbr);border-radius:var(--rad);color:var(--b);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:4px;" id="keyLink">
+        🔗 Google AI Studio 取得免費 Key
+      </button>`:`
+      <div style="background:var(--gbg);border:.5px solid var(--gbr);border-radius:var(--rad);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--g);line-height:1.6;">
+        ✅ 最穩定，每次分析約 <b>$0.01 美金</b><br>
+        $5 儲值可用約半年（每天交易）
       </div>
-      <div style="font-size:12px;color:var(--tx2);margin-bottom:16px;">
-        Key 只存在手機本機，不會上傳到任何伺服器。
-      </div>
-      <button style="width:100%;padding:12px;background:var(--bbg);border:.5px solid var(--bbr);border-radius:var(--rad);color:var(--b);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;" id="keyLink">
-        🔗 開啟 Google AI Studio 取得 Key
-      </button>
+      <div class="field"><div class="fl">Anthropic API Key（sk-ant-...）</div>
+        <input type="text" id="keyInputA" value="${esc(ka)}" placeholder="sk-ant-api03-..." style="font-family:'SF Mono',monospace;font-size:13px;"></div>
+      <button style="width:100%;padding:11px;background:var(--gbg);border:.5px solid var(--gbr);border-radius:var(--rad);color:var(--g);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:4px;" id="keyLink">
+        🔗 Anthropic Console 取得 Key
+      </button>`}
     </div>
-    <div class="m-ft"><button class="pbtn" id="btnKeySave">儲存 API Key</button></div>
+    <div class="m-ft"><button class="pbtn" id="btnKeySave">儲存</button></div>
   </div></div>`;
 }
 function bindKeyModal(){
+  const prov=getProvider();
   document.getElementById('mX')?.addEventListener('click',closeModal);
-  document.getElementById('keyLink')?.addEventListener('click',()=>window.open('https://aistudio.google.com/app/apikey'));
+  document.getElementById('provG')?.addEventListener('click',()=>{setProvider('google');S.modal='key';renderModal();});
+  document.getElementById('provA')?.addEventListener('click',()=>{setProvider('anthropic');S.modal='key';renderModal();});
+  document.getElementById('keyLink')?.addEventListener('click',()=>{
+    if(getProvider()==='google')window.open('https://aistudio.google.com/app/apikey');
+    else window.open('https://console.anthropic.com');
+  });
   document.getElementById('btnKeySave')?.addEventListener('click',()=>{
-    const k=document.getElementById('keyInput')?.value?.trim()||'';
-    setKey(k);closeModal();
-    if(k)alert('Google API Key 已儲存！現在可以上傳對帳單自動分析了。');
+    if(getProvider()==='google'){
+      const k=document.getElementById('keyInputG')?.value?.trim()||'';
+      setKey(k);closeModal();
+      if(k)alert('Google API Key 已儲存！');
+    }else{
+      const k=document.getElementById('keyInputA')?.value?.trim()||'';
+      setKeyAnt(k);closeModal();
+      if(k)alert('Anthropic API Key 已儲存！');
+    }
   });
 }
 
@@ -320,7 +347,7 @@ function buildImportModal(){
   let body='';
   if(imp.state==='upload'){
     body=`
-      ${!hasKey?`<div class="key-banner">⚠️ 未設定 Google API Key，AI 分析功能無法使用。<span class="key-link" id="goKey"> 點此免費設定</span></div>`:''}
+      ${!hasKey?`<div class="key-banner">⚠️ 未設定 API Key。<span class="key-link" id="goKey"> 點此設定（Google 免費 / Anthropic 付費更穩定）</span></div>`:''}
       <div class="field"><div class="fl">上傳對帳單截圖</div>
         <label class="upl" for="stmtImg" style="min-height:80px;flex-direction:column;gap:6px;">
           <span style="font-size:28px;">📷</span>
@@ -377,8 +404,7 @@ function buildImportModal(){
 }
 
 async function analyzeImage(b64,mime){
-  const key=getKey();
-  if(!key)throw new Error('請先設定 Google API Key（點右上角 🔑）');
+  const prov=getProvider();
   const prompt=`這是台灣期貨公司的「歷史沖銷查詢」對帳單截圖。請分析並提取所有已完成的交易記錄。
 
 解析規則：
@@ -388,28 +414,46 @@ async function analyzeImage(b64,mime){
 4. 判斷方向：看開倉那行的買賣欄：買進=long，賣出=short
 5. 商品對照：微台期→微台指，小台→小台指，大台→台指期
 
-只回傳純 JSON 陣列，不要 markdown、不要說明文字，格式如下：
+只回傳純 JSON 陣列，不要 markdown、不要說明文字：
 [{"serialNo":9,"date":"2026-06-16","instrument":"微台指","direction":"long","entryPrice":45822,"exitPrice":45854,"quantity":1,"pnl":320}]
 
 pnl計算：微台指每點10元，小台指每點50元，台指期每點200元`;
 
-  const resp=await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,
-    {
+  let resp,text;
+  if(prov==='anthropic'){
+    const key=getKeyAnt();
+    if(!key)throw new Error('請先設定 Anthropic API Key（點右上角 🔑 → 選 Anthropic）');
+    resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:mime,data:b64.split(',')[1]}},
+        {type:'text',text:prompt}
+      ]}]})
+    });
+    if(!resp.ok){const e=await resp.text();throw new Error('Anthropic API 錯誤 '+resp.status+': '+e.slice(0,300));}
+    const data=await resp.json();
+    text=data.content[0].text.trim();
+  }else{
+    const key=getKey();
+    if(!key)throw new Error('請先設定 Google API Key（點右上角 🔑）');
+    resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents:[{parts:[
-          {inline_data:{mime_type:mime,data:b64.split(',')[1]}},
-          {text:prompt}
-        ]}],
-        generationConfig:{temperature:0,maxOutputTokens:2000}
-      })
+      body:JSON.stringify({contents:[{parts:[{inline_data:{mime_type:mime,data:b64.split(',')[1]}},{text:prompt}]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
+    });
+    if(!resp.ok){
+      const e=await resp.text();
+      if(resp.status===429)throw new Error('Google 配額已用盡（429）
+
+解法①：等 1 分鐘再試
+解法②：點右上角 🔑 改用 Anthropic（$5，最穩定）
+解法③：到 console.cloud.google.com 啟用帳單以提高免費額度');
+      throw new Error('Google API 錯誤 '+resp.status+': '+e.slice(0,300));
     }
-  );
-  if(!resp.ok){const e=await resp.text();throw new Error('API 錯誤 '+resp.status+': '+e.slice(0,300));}
-  const data=await resp.json();
-  const text=data.candidates[0].content.parts[0].text.trim();
+    const data=await resp.json();
+    text=data.candidates[0].content.parts[0].text.trim();
+  }
   const clean=text.replace(/```json|```/g,'').trim();
   return JSON.parse(clean);
 }
