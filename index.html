@@ -328,19 +328,23 @@ function buildImportModal(){
           <input type="file" id="stmtImg" accept="image/*" style="display:none;">
         </label>
       </div>
-      <div style="font-size:12px;color:var(--tx2);line-height:1.7;padding:10px 12px;background:var(--card2);border-radius:var(--rad);">
+      <div style="font-size:12px;color:var(--tx2);line-height:1.7;padding:10px 12px;background:var(--card2);border-radius:var(--rad);margin-bottom:10px;">
         <b>分析規則：</b><br>
         • 相同平倉流水號 = 同一筆交易<br>
         • 下方那行 = 開倉價<br>
         • 紅色（買進）= 做多，綠色（賣出）= 做空<br>
         • 微台指：1點 = 10元
+      </div>
+      <div style="font-size:12px;color:var(--b);line-height:1.7;padding:10px 12px;background:var(--bbg);border:.5px solid var(--bbr);border-radius:var(--rad);">
+        ⚠️ <b>必須在 Safari 中開啟</b>才能使用 AI 分析<br>
+        （從「檔案 App 預覽」中無法連線外部 API）
       </div>`;
   } else if(imp.state==='loading'){
     body=`<div class="loading-box"><div class="spinner"></div><div>AI 正在分析對帳單...<br><span style="font-size:12px;opacity:.7;">通常需要 5-10 秒</span></div></div>`;
   } else if(imp.state==='done'){
     body=`
       ${imp.imgData?`<img src="${imp.imgData}" class="stmt-img" alt="對帳單">`:''}
-      ${imp.err?`<div class="err-box">${esc(imp.err)}</div>`:''}
+      ${imp.err?`<div class="err-box" style="white-space:pre-line;">${esc(imp.err)}</div>`:''}
       <div style="font-size:12px;color:var(--tx2);margin-bottom:10px;">AI 解析完成，共 ${parsed.length} 筆。確認後匯入：</div>
       ${parsed.map((t,i)=>{
         const p=t.pnl>=0;
@@ -390,7 +394,7 @@ async function analyzeImage(b64,mime){
 pnl計算：微台指每點10元，小台指每點50元，台指期每點200元`;
 
   const resp=await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+key,
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,
     {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -431,7 +435,13 @@ function bindImportModal(){
       S.imp.parsed=trades.map(t=>({...t,_skip:false}));
       S.imp.state='done';S.imp.err='';
     }catch(e){
-      S.imp.state='done';S.imp.err='分析失敗：'+e.message;S.imp.parsed=[];
+      let msg=e.message||'';
+      if(msg.toLowerCase().includes('load failed')||msg.toLowerCase().includes('failed to fetch')||msg.toLowerCase().includes('networkerror')){
+        msg='⚠️ 網路請求被封鎖\n\n你目前在「檔案 App 預覽模式」，此模式限制對外網路連線。\n\n請這樣做：\n① 點右上角「···」→「在 Safari 中打開」\n② 或長按檔案 → 分享 → 在 Safari 中打開\n\n在 Safari 開啟後即可正常使用 AI 分析。';
+      } else if(msg.includes('400')||msg.includes('401')||msg.includes('403')){
+        msg='API Key 錯誤或無效，請點右上角 🔑 重新設定 Google API Key。';
+      }
+      S.imp.state='done';S.imp.err=msg;S.imp.parsed=[];
     }
     renderModal();
   });
