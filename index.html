@@ -6,390 +6,245 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="交易複盤">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme:dark)">
-<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme:light)">
 <title>交易複盤</title>
 <style>
 :root{
-  --st:env(safe-area-inset-top,0px);
-  --sb:env(safe-area-inset-bottom,0px);
-  --bg:#f2f2f7;--card:#ffffff;--card2:#f2f2f7;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+  --bg:#f2f2f7;--card:#fff;--card2:#f2f2f7;--card3:#e5e5ea;
   --tx:#1c1c1e;--tx2:#636366;--tx3:#aeaeb2;
   --br:rgba(60,60,67,.15);--br2:rgba(60,60,67,.25);
-  --g:#15803d;--gbg:#f0fdf4;--gbr:#bbf7d0;
-  --r:#dc2626;--rbg:#fef2f2;--rbr:#fecaca;
+  --g:#15803d;--gbg:#f0fdf4;--gbr:#86efac;
+  --r:#dc2626;--rbg:#fef2f2;--rbr:#fca5a5;
   --y:#d97706;--ybg:#fffbeb;--ybr:#fde68a;
-  --b:#2563eb;--bbg:#eff6ff;--bbr:#bfdbfe;
-  --acc:#1c1c1e;
-  --rad:10px;--rad2:14px;
-  --hh:60px;--nh:56px;
+  --b:#2563eb;--bbg:#eff6ff;--bbr:#93c5fd;
+  --p:#7c3aed;--pbg:#f5f3ff;--pbr:#c4b5fd;
+  --acc:#1c1c1e;--rad:10px;--rad2:14px;
 }
 @media(prefers-color-scheme:dark){:root{
-  --bg:#000000;--card:#1c1c1e;--card2:#2c2c2e;
-  --tx:#ffffff;--tx2:rgba(235,235,245,.7);--tx3:rgba(235,235,245,.4);
-  --br:rgba(255,255,255,.1);--br2:rgba(255,255,255,.2);
-  --g:#34d399;--gbg:#022c22;--gbr:#065f46;
-  --r:#f87171;--rbg:#2d0a0a;--rbr:#7f1d1d;
+  --bg:#000;--card:#1c1c1e;--card2:#2c2c2e;--card3:#3a3a3c;
+  --tx:#fff;--tx2:rgba(235,235,245,.7);--tx3:rgba(235,235,245,.4);
+  --br:rgba(255,255,255,.1);--br2:rgba(255,255,255,.18);
+  --g:#4ade80;--gbg:#052e16;--gbr:#166534;
+  --r:#f87171;--rbg:#1f0a0a;--rbr:#7f1d1d;
   --y:#fbbf24;--ybg:#1c1200;--ybr:#78350f;
-  --b:#60a5fa;--bbg:#0c1a3a;--bbr:#1e3a6e;
-  --acc:#ffffff;
+  --b:#60a5fa;--bbg:#0c1a3a;--bbr:#1e40af;
+  --p:#a78bfa;--pbg:#1e1030;--pbr:#5b21b6;
+  --acc:#fff;
 }}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{height:100%;background:var(--bg)}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;color:var(--tx);background:var(--bg);height:100%;overflow:hidden}
-#root{display:flex;flex-direction:column;height:100vh;height:100dvh}
-
+html,body{height:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;color:var(--tx);overflow:hidden}
+#root{display:flex;flex-direction:column;height:100dvh;height:100vh}
 /* Header */
-#hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
-  background:var(--card);border-bottom:.5px solid var(--br);
-  padding:calc(var(--st) + 10px) 16px 10px;min-height:calc(var(--st) + var(--hh))}
+#hdr{flex-shrink:0;background:var(--card);border-bottom:.5px solid var(--br);padding:calc(var(--st)+10px) 14px 10px}
+.hdr-r1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .hdr-s{font-size:10px;color:var(--tx2);letter-spacing:1px;margin-bottom:1px}
 .hdr-t{font-size:19px;font-weight:700;letter-spacing:-.3px}
-.btn-add{display:flex;align-items:center;gap:5px;padding:8px 16px;
-  background:var(--acc);color:var(--bg);border:none;border-radius:var(--rad);
-  font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;
-  -webkit-touch-callout:none}
-
-/* Content */
+.btn-add{display:flex;align-items:center;gap:4px;padding:8px 14px;background:var(--acc);color:var(--bg);border:none;border-radius:var(--rad);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-key{padding:7px 10px;background:var(--card2);border:.5px solid var(--br2);border-radius:var(--rad);font-size:18px;cursor:pointer;color:var(--tx2)}
+.imp-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 13px;background:var(--pbg);border:.5px solid var(--pbr);border-radius:var(--rad);font-size:13px;color:var(--p);cursor:pointer;font-family:inherit;font-weight:500}
+/* Content / Nav */
 #cnt{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
-
-/* Bottom Nav */
-#nav{flex-shrink:0;display:flex;background:var(--card);border-top:.5px solid var(--br);
-  padding-bottom:var(--sb)}
-.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:9px 0 6px;background:none;border:none;cursor:pointer;font-family:inherit;
-  -webkit-touch-callout:none}
-.nb-ic{font-size:24px;line-height:1}
-.nb-lb{font-size:10px;font-weight:500}
-
+#nav{flex-shrink:0;display:flex;background:var(--card);border-top:.5px solid var(--br);padding-bottom:var(--sb)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 5px;background:none;border:none;cursor:pointer;font-family:inherit}
+.nb-ic{font-size:22px;line-height:1}.nb-lb{font-size:10px;font-weight:500}
 /* Modal */
-#modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  animation:fadeIn .2s ease}
-.m-sheet{background:var(--card);border-radius:20px 20px 0 0;
-  max-height:94dvh;display:flex;flex-direction:column;
-  animation:slideUp .32s cubic-bezier(.32,.72,0,1)}
-.m-han{width:36px;height:4px;background:var(--br2);border-radius:2px;
-  margin:10px auto 4px;flex-shrink:0}
-.m-hd{padding:4px 16px 12px;border-bottom:.5px solid var(--br);
-  display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.m-bg{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:100;display:flex;flex-direction:column;justify-content:flex-end;animation:fadeIn .18s ease}
+.m-sheet{background:var(--card);border-radius:20px 20px 0 0;max-height:94dvh;max-height:94vh;display:flex;flex-direction:column;animation:slideUp .3s cubic-bezier(.32,.72,0,1)}
+.m-han{width:36px;height:4px;background:var(--br2);border-radius:2px;margin:10px auto 4px;flex-shrink:0}
+.m-hd{padding:4px 16px 11px;border-bottom:.5px solid var(--br);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .m-hd-t{font-size:17px;font-weight:700}
-.m-close{background:none;border:none;color:var(--tx2);font-size:28px;
-  cursor:pointer;line-height:1;padding:0 4px;font-family:inherit;
-  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
-  border-radius:50%;background:var(--card2)}
-.m-scr{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px}
-.m-ft{padding:12px 16px;padding-bottom:calc(12px + var(--sb));
-  border-top:.5px solid var(--br);flex-shrink:0}
+.m-x{background:var(--card2);border:none;border-radius:50%;width:28px;height:28px;color:var(--tx2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.m-scr{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 8px}
+.m-ft{padding:10px 16px;padding-bottom:calc(10px + var(--sb));border-top:.5px solid var(--br);flex-shrink:0}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-
-/* Page pad */
-.pad{padding:12px 16px 4px}
-
-/* Day group */
-.day-g{margin-bottom:20px}
-.day-hdr{display:flex;align-items:center;justify-content:space-between;
-  padding:7px 12px;background:var(--card);border-radius:var(--rad);margin-bottom:8px;
-  border-left:3px solid var(--g)}
-.day-hdr.neg{border-left-color:var(--r)}
-.day-date{font-size:12px;color:var(--tx2);font-weight:500}
-.day-pnl{font-family:'SF Mono',monospace;font-size:13px;font-weight:600}
-
-/* Trade Card */
-.tc{background:var(--card);border-radius:var(--rad2);margin-bottom:8px;
-  overflow:hidden;border:.5px solid var(--br)}
-.tc-top{display:flex;align-items:center;gap:10px;padding:13px 12px;
-  cursor:pointer;user-select:none;-webkit-user-select:none}
-.tc-top:active{background:var(--card2)}
-.tc-det{border-top:.5px solid var(--br);padding:13px}
-.dir{display:inline-block;padding:3px 8px;border-radius:6px;
-  font-size:11px;font-weight:700;flex-shrink:0;letter-spacing:.3px}
-.dir-l{background:var(--gbg);color:var(--g)}
-.dir-s{background:var(--rbg);color:var(--r)}
-.tc-name{font-size:14px;font-weight:500;margin-bottom:2px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tc-price{font-family:'SF Mono',monospace;font-size:12px;color:var(--tx2)}
-.tc-pnl{text-align:right;flex-shrink:0;margin-right:4px}
-.tc-pnl-num{font-family:'SF Mono',monospace;font-size:16px;font-weight:700}
-.tc-pnl-unit{font-size:10px;color:var(--tx2);margin-top:1px}
-.chev{flex-shrink:0;color:var(--tx2);transition:transform .18s ease;display:inline-flex}
-.chev.op{transform:rotate(180deg)}
-.mono{font-family:'SF Mono',monospace}
-.profit{color:var(--g)}.lossc{color:var(--r)}
-
-/* Card detail */
-.imgs-wrap{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;
-  -webkit-overflow-scrolling:touch}
-.ith{height:96px;border-radius:10px;border:.5px solid var(--br);
-  object-fit:cover;flex-shrink:0}
-.ith-ph{height:96px;width:96px;border-radius:10px;background:var(--card2);
-  flex-shrink:0;animation:pulse 1.2s infinite}
-@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
-.det-label{font-size:11px;color:var(--tx2);margin-bottom:5px;font-weight:500;letter-spacing:.3px}
-.det-label-y{font-size:11px;color:var(--y);margin-bottom:5px;font-weight:500;
-  display:flex;align-items:center;gap:4px}
-.tbox{font-size:13px;line-height:1.65;border-radius:var(--rad);padding:10px 12px;margin-bottom:10px}
-.tlog{background:var(--card2)}
-.timp{background:var(--ybg);border-left:2px solid var(--y)}
-.act-row{display:flex;gap:8px;margin-top:4px}
-.act-edit{flex:1;padding:10px;background:var(--card2);border:.5px solid var(--br2);
-  border-radius:var(--rad);color:var(--tx);font-size:13px;cursor:pointer;
-  font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
-.act-del{padding:10px 14px;background:var(--rbg);border:.5px solid var(--rbr);
-  border-radius:var(--rad);color:var(--r);font-size:13px;cursor:pointer;font-family:inherit}
-.act-edit:active,.act-del:active{opacity:.7}
-
-/* Empty */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  height:60dvh;gap:14px;color:var(--tx2);text-align:center;line-height:1.8;font-size:14px}
-
-/* Stats */
-.mo-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;
-  -webkit-overflow-scrolling:touch}
-.mo-pill{flex-shrink:0;padding:5px 15px;border-radius:20px;
-  font-size:12px;font-family:'SF Mono',monospace;cursor:pointer;
-  border:.5px solid var(--br2);background:none;color:var(--tx2)}
-.mo-pill.on{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:600}
-.tot-card{padding:20px;border-radius:var(--rad2);text-align:center;margin-bottom:14px;
-  border-left:3px solid}
-.tot-lb{font-size:11px;color:var(--tx2);margin-bottom:4px;font-weight:500;letter-spacing:.5px}
-.tot-amt{font-family:'SF Mono',monospace;font-size:32px;font-weight:700;line-height:1.1}
-.tot-sub{font-size:11px;color:var(--tx2);margin-top:5px}
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.sc{background:var(--card);border-radius:var(--rad);padding:12px 13px;
-  border:.5px solid var(--br)}
-.sc-lb{font-size:11px;color:var(--tx2);margin-bottom:5px;font-weight:500}
-.sc-v{font-family:'SF Mono',monospace;font-size:18px;font-weight:600}
-.day-sec-hdr{font-size:11px;color:var(--tx2);font-weight:500;
-  margin-bottom:8px;letter-spacing:.3px}
-.drow{display:flex;align-items:center;justify-content:space-between;
-  padding:9px 12px;background:var(--card);border-radius:var(--rad);
-  margin-bottom:4px;border:.5px solid var(--br)}
-.ddot{width:3px;height:17px;border-radius:2px;flex-shrink:0}
-
 /* Form */
 .field{margin-bottom:14px}
-.fl{font-size:11px;color:var(--tx2);margin-bottom:6px;font-weight:500;letter-spacing:.3px}
-.fl-y{font-size:11px;color:var(--y);margin-bottom:6px;font-weight:500;
-  display:flex;align-items:center;gap:4px}
-input[type=text],input[type=number],input[type=date],textarea,select{
-  background:var(--card2);border:.5px solid var(--br2);border-radius:var(--rad);
-  padding:11px 12px;color:var(--tx);width:100%;outline:none;
-  font-family:inherit;font-size:15px;-webkit-appearance:none;appearance:none}
-input:focus,textarea:focus,select:focus{border-color:var(--b);
-  box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.fl{font-size:11px;color:var(--tx2);margin-bottom:5px;font-weight:500;letter-spacing:.3px}
+.fl-y{font-size:11px;color:var(--y);margin-bottom:5px;font-weight:500;display:flex;align-items:center;gap:3px}
+input[type=text],input[type=number],input[type=date],textarea{background:var(--card2);border:.5px solid var(--br2);border-radius:var(--rad);padding:11px 12px;color:var(--tx);width:100%;outline:none;font-family:inherit;font-size:15px;-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus{border-color:var(--b);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
 textarea{resize:none;line-height:1.55}
-.ni{text-align:center;font-family:'SF Mono',monospace;padding-left:4px;padding-right:4px}
+.ni{text-align:center;font-family:'SF Mono',monospace;padding-left:3px;padding-right:3px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .pg{display:flex;gap:6px}
-.pill{flex:1;padding:10px 4px;font-size:12px;font-weight:500;
-  border:.5px solid var(--br2);border-radius:var(--rad);background:none;
-  color:var(--tx2);cursor:pointer;text-align:center;font-family:inherit;transition:all .12s}
-.pill:active{opacity:.7}
+.pill{flex:1;padding:10px 4px;font-size:12px;font-weight:500;border:.5px solid var(--br2);border-radius:var(--rad);background:none;color:var(--tx2);cursor:pointer;text-align:center;font-family:inherit}
 .ai{background:var(--bbg);border-color:var(--bbr);color:var(--b)}
 .al{background:var(--gbg);border-color:var(--gbr);color:var(--g)}
 .ash{background:var(--rbg);border-color:var(--rbr);color:var(--r)}
-.pnl-prev{display:flex;align-items:baseline;justify-content:center;gap:8px;
-  padding:12px;border-radius:var(--rad);margin-bottom:14px}
-.pnl-prev-amt{font-family:'SF Mono',monospace;font-size:22px;font-weight:700}
-.upl{display:flex;align-items:center;justify-content:center;gap:8px;
-  border:.5px dashed var(--br2);border-radius:var(--rad);padding:13px;
-  cursor:pointer;color:var(--tx2);font-size:13px}
-.m-imgs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:9px;
-  -webkit-overflow-scrolling:touch}
-.m-ith{height:82px;border-radius:8px;border:.5px solid var(--br);object-fit:cover;flex-shrink:0}
+.pnl-prev{display:flex;align-items:baseline;justify-content:center;gap:8px;padding:11px;border-radius:var(--rad);margin-bottom:13px}
+.upl{display:flex;align-items:center;justify-content:center;gap:8px;border:.5px dashed var(--br2);border-radius:var(--rad);padding:13px;cursor:pointer;color:var(--tx2);font-size:13px}
+.m-imgs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:9px}
+.m-ith{height:80px;border-radius:8px;border:.5px solid var(--br);object-fit:cover;flex-shrink:0}
 .m-iwrap{position:relative;flex-shrink:0}
-.m-idel{position:absolute;top:-6px;right:-6px;width:20px;height:20px;
-  border-radius:50%;background:var(--r);border:none;color:#fff;
-  font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  line-height:1;font-family:inherit;font-weight:700}
-.pbtn{width:100%;padding:15px;background:var(--acc);color:var(--bg);border:none;
-  border-radius:var(--rad);font-size:16px;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:opacity .12s}
-.pbtn:active{opacity:.8}
-.pbtn:disabled{opacity:.3;cursor:not-allowed}
-
-/* Separator */
-.sec-sep{height:1px;background:var(--br);margin:0 0 12px}
+.m-idel{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--r);border:none;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:inherit;font-weight:700}
+.pbtn{width:100%;padding:14px;background:var(--acc);color:var(--bg);border:none;border-radius:var(--rad);font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.pbtn:disabled{opacity:.3;cursor:not-allowed}.pbtn:active{opacity:.8}
+/* Review */
+.pad{padding:12px 14px}
+.day-g{margin-bottom:18px}
+.day-hdr{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--card);border-radius:var(--rad);margin-bottom:8px;border-left:3px solid var(--g)}
+.day-hdr.neg{border-left-color:var(--r)}
+.tc{background:var(--card);border-radius:var(--rad2);margin-bottom:8px;overflow:hidden;border:.5px solid var(--br)}
+.tc-top{display:flex;align-items:center;gap:10px;padding:13px 12px;cursor:pointer;user-select:none}
+.tc-top:active{background:var(--card2)}
+.tc-det{border-top:.5px solid var(--br);padding:13px}
+.dir{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;flex-shrink:0}
+.dl{background:var(--gbg);color:var(--g)}.ds{background:var(--rbg);color:var(--r)}
+.mono{font-family:'SF Mono',monospace}.profit{color:var(--g)}.lossc{color:var(--r)}
+.tbox{font-size:13px;line-height:1.65;border-radius:var(--rad);padding:10px 12px;margin-bottom:10px}
+.tlog{background:var(--card2)}.timp{background:var(--ybg);border-left:2px solid var(--y)}
+.imgs-wrap{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.ith{height:92px;border-radius:10px;border:.5px solid var(--br);object-fit:cover;flex-shrink:0}
+.ith-ph{height:92px;width:92px;border-radius:10px;background:var(--card2);flex-shrink:0}
+.act-row{display:flex;gap:8px;margin-top:4px}
+.act-edit{flex:1;padding:9px;background:var(--card2);border:.5px solid var(--br2);border-radius:var(--rad);color:var(--tx);font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
+.act-del{padding:9px 14px;background:var(--rbg);border:.5px solid var(--rbr);border-radius:var(--rad);color:var(--r);font-size:13px;cursor:pointer;font-family:inherit}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:55dvh;gap:14px;color:var(--tx2);text-align:center;font-size:14px;line-height:1.8}
+.chev{flex-shrink:0;color:var(--tx2);transition:transform .18s;display:inline-flex}.chev.op{transform:rotate(180deg)}
+/* Stats */
+.mo-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.mo-pill{flex-shrink:0;padding:5px 14px;border-radius:20px;font-size:12px;font-family:'SF Mono',monospace;cursor:pointer;border:.5px solid var(--br2);background:none;color:var(--tx2)}
+.mo-pill.on{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:600}
+.tot{padding:18px;border-radius:var(--rad2);text-align:center;margin-bottom:14px;border-left:3px solid}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.sc{background:var(--card);border-radius:var(--rad);padding:12px 13px;border:.5px solid var(--br)}
+.sc-lb{font-size:11px;color:var(--tx2);margin-bottom:4px;font-weight:500}
+.sc-v{font-family:'SF Mono',monospace;font-size:18px;font-weight:600}
+.drow{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--card);border-radius:var(--rad);margin-bottom:4px;border:.5px solid var(--br)}
+.ddot{width:3px;height:16px;border-radius:2px;flex-shrink:0}
+/* Import specific */
+.stmt-img{width:100%;border-radius:var(--rad);border:.5px solid var(--br);max-height:220px;object-fit:contain;background:var(--card2);display:block;margin-bottom:14px}
+.ai-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--pbg);border:.5px solid var(--pbr);border-radius:var(--rad);color:var(--p);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px}
+.ai-btn:disabled{opacity:.4;cursor:not-allowed}
+.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:28px;color:var(--tx2);font-size:14px}
+.spinner{width:32px;height:32px;border:3px solid var(--br);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.parse-card{background:var(--card);border:.5px solid var(--br);border-radius:var(--rad2);overflow:hidden;margin-bottom:8px}
+.pc-top{display:flex;align-items:center;padding:11px 12px;gap:10px}
+.pc-edit{padding:4px 10px;background:var(--card2);border:.5px solid var(--br2);border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--tx)}
+.key-banner{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--ybg);border:.5px solid var(--ybr);border-radius:var(--rad);margin-bottom:14px;font-size:12px;color:var(--y)}
+.key-link{color:var(--b);text-decoration:underline;cursor:pointer}
+.err-box{padding:12px;background:var(--rbg);border:.5px solid var(--rbr);border-radius:var(--rad);font-size:13px;color:var(--r);margin-bottom:12px}
 </style>
 </head>
 <body>
 <div id="root">
   <div id="hdr">
-    <div>
-      <div class="hdr-s">TRADING JOURNAL</div>
-      <div class="hdr-t">交易複盤</div>
+    <div class="hdr-r1">
+      <div><div class="hdr-s">TRADING JOURNAL</div><div class="hdr-t">交易複盤</div></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn-key" id="btnKey" title="API Key 設定">🔑</button>
+        <button class="btn-add" id="btnAdd">＋ 新增</button>
+      </div>
     </div>
-    <button class="btn-add" id="btnAdd">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      新增
+    <button class="imp-btn" id="btnImport">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h10M7 11h7"/></svg>
+      📷 上傳對帳單 — AI 自動分析生成交易
     </button>
   </div>
   <div id="cnt"></div>
   <div id="nav">
-    <button class="nb" id="navR">
-      <span class="nb-ic">📋</span>
-      <span class="nb-lb" id="lbR" style="color:var(--tx)">複盤記錄</span>
-    </button>
-    <button class="nb" id="navS">
-      <span class="nb-ic">📊</span>
-      <span class="nb-lb" id="lbS" style="color:var(--tx2)">月統計</span>
-    </button>
+    <button class="nb" id="navR"><span class="nb-ic">📋</span><span class="nb-lb" id="lbR">複盤記錄</span></button>
+    <button class="nb" id="navS"><span class="nb-ic">📊</span><span class="nb-lb" id="lbS">月統計</span></button>
   </div>
   <div id="modal"></div>
 </div>
-
 <script>
-// ── IndexedDB ─────────────────────────────────────────────────────────────
+// ── IndexedDB ──────────────────────────────────────────────
 let _db=null;
-function getDB(){
-  if(_db)return Promise.resolve(_db);
-  return new Promise((res,rej)=>{
-    const r=indexedDB.open('TJImgs',1);
-    r.onupgradeneeded=e=>{
-      const db=e.target.result;
-      if(!db.objectStoreNames.contains('imgs'))
-        db.createObjectStore('imgs',{keyPath:'id'});
-    };
-    r.onsuccess=e=>{_db=e.target.result;res(_db);};
-    r.onerror=()=>rej(r.error);
-  });
-}
-async function dbSet(id,data){
-  const db=await getDB();
-  return new Promise((res,rej)=>{
-    const tx=db.transaction('imgs','readwrite');
-    tx.objectStore('imgs').put({id,data});
-    tx.oncomplete=res;tx.onerror=()=>rej(tx.error);
-  });
-}
-async function dbGet(id){
-  const db=await getDB();
-  return new Promise(res=>{
-    const r=db.transaction('imgs','readonly').objectStore('imgs').get(id);
-    r.onsuccess=()=>res(r.result?.data||null);
-    r.onerror=()=>res(null);
-  });
-}
-async function dbDel(id){
-  const db=await getDB();
-  return new Promise(res=>{
-    const tx=db.transaction('imgs','readwrite');
-    tx.objectStore('imgs').delete(id);
-    tx.oncomplete=res;tx.onerror=res;
-  });
-}
+function getDB(){if(_db)return Promise.resolve(_db);return new Promise((res,rej)=>{const r=indexedDB.open('TJv3',1);r.onupgradeneeded=e=>{e.target.result.createObjectStore('imgs',{keyPath:'id'});};r.onsuccess=e=>{_db=e.target.result;res(_db);};r.onerror=()=>rej(r.error);});}
+async function dbSet(id,data){const db=await getDB();return new Promise((res,rej)=>{const tx=db.transaction('imgs','readwrite');tx.objectStore('imgs').put({id,data});tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});}
+async function dbGet(id){const db=await getDB();return new Promise(res=>{const r=db.transaction('imgs','readonly').objectStore('imgs').get(id);r.onsuccess=()=>res(r.result?.data||null);r.onerror=()=>res(null);});}
+async function dbDel(id){const db=await getDB();return new Promise(res=>{const tx=db.transaction('imgs','readwrite');tx.objectStore('imgs').delete(id);tx.oncomplete=res;tx.onerror=res;});}
 
-// ── Storage ───────────────────────────────────────────────────────────────
-function loadTrades(){try{return JSON.parse(localStorage.getItem('tj-v3')||'[]');}catch{return[];}}
-function saveTrades(ts){localStorage.setItem('tj-v3',JSON.stringify(ts));}
+// ── Storage ────────────────────────────────────────────────
+function loadTrades(){try{return JSON.parse(localStorage.getItem('tj-v5')||'[]');}catch{return[];}}
+function saveTrades(){localStorage.setItem('tj-v5',JSON.stringify(S.trades));}
+function getKey(){return localStorage.getItem('ant-key')||'';}
+function setKey(k){localStorage.setItem('ant-key',k);}
 
-// ── State ─────────────────────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────
 const S={
-  trades:loadTrades(),
-  tab:'review',
-  expandedId:null,
-  statsMonth:curMo(),
-  modal:null,   // null | {mode:'add'|'edit', id?}
-  mForm:{},
-  mImgs:[],     // [{id,data,isNew}]
-  loading:false
+  trades:loadTrades(),tab:'review',expandedId:null,statsMonth:curMo(),
+  modal:null, editId:null, mForm:{}, mImgs:[],
+  imp:{imgData:null,imgMime:'image/jpeg',state:'upload',parsed:[],err:''}
 };
 
 function today(){return new Date().toISOString().slice(0,10);}
 function curMo(){return new Date().toISOString().slice(0,7);}
+function uid(){return Date.now()+'_'+Math.random().toString(36).slice(2,6);}
+// Point values: 台指期=200, 小台指=50, 微台指=10, 股票=1
+function ptVal(inst){return inst==='台指期'?200:inst==='小台指'?50:inst==='微台指'?10:1;}
 function calcPnL(inst,dir,en,ex,qty){
-  if(!en||!ex||!qty)return 0;
-  return Math.round((dir==='long'?ex-en:en-ex)*qty*(inst==='台指期'?200:inst==='小台指'?50:1));
+  if(!en||!ex||!qty)return null;
+  return Math.round((dir==='long'?ex-en:en-ex)*qty*ptVal(inst));
 }
 function fmt(n){return(n>0?'+':'')+n.toLocaleString();}
-function uid(){return Date.now()+'_'+Math.random().toString(36).slice(2,7);}
-function fileToB64(file){
-  return new Promise(res=>{
-    const r=new FileReader();
-    r.onload=e=>res(e.target.result);
-    r.readAsDataURL(file);
-  });
-}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escNl(s){return esc(s).replace(/\n/g,'<br>');}
+function fileToB64(f){return new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(f);});}
+function getMime(b64){if(b64.includes('image/png'))return'image/png';if(b64.includes('image/webp'))return'image/webp';if(b64.includes('image/gif'))return'image/gif';return'image/jpeg';}
 
-// ── Icons ─────────────────────────────────────────────────────────────────
-const chevSvg='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
-const editSvg='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-const trashSvg='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>';
-const camSvg='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>';
-const boltSvg='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+const SV={
+  down:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+  edit:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+  trash:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>',
+  cam:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+  bolt:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  robot:'🤖',star:'✨'
+};
 
-// ── Render ────────────────────────────────────────────────────────────────
-function syncInputsToState(){
-  const map={fDate:'date',fSym:'symbol',fEn:'entryPrice',fEx:'exitPrice',fQty:'quantity',fLog:'entryLogic',fImp:'improvement'};
-  for(const[id,k]of Object.entries(map)){const el=document.getElementById(id);if(el)S.mForm[k]=el.value;}
-}
-
+// ── Render ─────────────────────────────────────────────────
+function syncForm(){const map={fDate:'date',fSym:'symbol',fEn:'entryPrice',fEx:'exitPrice',fQty:'quantity',fLog:'entryLogic',fImp:'improvement'};for(const[id,k]of Object.entries(map)){const el=document.getElementById(id);if(el)S.mForm[k]=el.value;}}
 function render(){
   document.getElementById('lbR').style.color=S.tab==='review'?'var(--tx)':'var(--tx2)';
   document.getElementById('lbS').style.color=S.tab==='stats'?'var(--tx)':'var(--tx2)';
   document.getElementById('cnt').innerHTML=S.tab==='review'?buildReview():buildStats();
-  renderModal();
-  bindContent();
+  renderModal();bindContent();
 }
-
 function renderModal(){
-  document.getElementById('modal').innerHTML=S.modal?buildModal():'';
-  if(S.modal)bindModal();
+  const el=document.getElementById('modal');
+  if(!S.modal){el.innerHTML='';return;}
+  if(S.modal==='key')el.innerHTML=buildKeyModal();
+  else if(S.modal==='import')el.innerHTML=buildImportModal();
+  else el.innerHTML=buildTradeModal();
+  if(S.modal==='key')bindKeyModal();
+  else if(S.modal==='import')bindImportModal();
+  else bindTradeModal();
 }
 
-// ── Review ────────────────────────────────────────────────────────────────
+// ── Review ─────────────────────────────────────────────────
 function buildReview(){
-  if(!S.trades.length)return`<div class="empty">
-    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="opacity:.2"><rect x="3" y="3" width="18" height="13" rx="2"/><polyline points="8 21 12 17 16 21"/><line x1="12" y1="13" x2="12" y2="17"/></svg>
-    <div>尚無交易記錄<br>點右上角「新增」開始記錄</div></div>`;
-  const g={};
-  S.trades.forEach(t=>{if(!g[t.date])g[t.date]=[];g[t.date].push(t);});
+  if(!S.trades.length)return`<div class="empty"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" style="opacity:.2"><rect x="3" y="3" width="18" height="13" rx="2"/><polyline points="8 21 12 17 16 21"/><line x1="12" y1="13" x2="12" y2="17"/></svg><div>尚無交易記錄<br>點「新增」或上傳對帳單開始</div></div>`;
+  const g={};S.trades.forEach(t=>{if(!g[t.date])g[t.date]=[];g[t.date].push(t);});
   const ds=Object.keys(g).sort((a,b)=>b.localeCompare(a));
   return`<div class="pad">`+ds.map(date=>{
     const dts=g[date],dp=dts.reduce((s,t)=>s+t.pnl,0);
-    return`<div class="day-g">
-      <div class="day-hdr${dp<0?' neg':''}">
-        <span class="day-date">${date}</span>
-        <span class="mono day-pnl ${dp>=0?'profit':'lossc'}">${fmt(dp)} TWD</span>
-      </div>
-      ${dts.map(t=>buildCard(t)).join('')}
-    </div>`;
+    return`<div class="day-g"><div class="day-hdr${dp<0?' neg':''}"><span style="font-size:12px;color:var(--tx2);font-weight:500;">${date}</span><span class="mono ${dp>=0?'profit':'lossc'}" style="font-size:13px;font-weight:600;">${fmt(dp)} TWD</span></div>${dts.map(t=>buildCard(t)).join('')}</div>`;
   }).join('')+'</div>';
 }
-
 function buildCard(t){
-  const open=S.expandedId===t.id;
-  const p=t.pnl>=0;
-  return`<div class="tc">
-    <div class="tc-top" data-toggle="${t.id}">
-      <span class="dir dir-${t.direction==='long'?'l':'s'}">${t.direction==='long'?'多▲':'空▼'}</span>
-      <div style="flex:1;min-width:0;">
-        <div class="tc-name">${esc(t.instrument)}${t.symbol?` (${esc(t.symbol)})`:''}</div>
-        <div class="tc-price">${t.entryPrice} → ${t.exitPrice}  ×${t.quantity}${t.instrument==='股票'?'股':'口'}</div>
-      </div>
-      <div class="tc-pnl">
-        <div class="tc-pnl-num ${p?'profit':'lossc'}">${fmt(t.pnl)}</div>
-        <div class="tc-pnl-unit">TWD</div>
-      </div>
-      <div class="chev${open?' op':''}">${chevSvg}</div>
-    </div>
-    ${open?`<div class="tc-det">
-      ${t.imageIds&&t.imageIds.length?`<div class="imgs-wrap" data-imgs="${t.id}">
-        ${t.imageIds.map(()=>'<div class="ith-ph"></div>').join('')}
-      </div>`:''}
-      ${t.entryLogic?`<div class="det-label">進出場邏輯</div><div class="tbox tlog">${escNl(t.entryLogic)}</div>`:''}
-      ${t.improvement?`<div class="det-label-y">${boltSvg}改進點</div><div class="tbox timp">${escNl(t.improvement)}</div>`:''}
-      <div class="act-row">
-        <button class="act-edit" data-edit="${t.id}">${editSvg} 編輯</button>
-        <button class="act-del" data-del="${t.id}">${trashSvg}</button>
-      </div>
-    </div>`:''}
+  const open=S.expandedId===t.id,p=t.pnl>=0,ln=t.direction==='long';
+  return`<div class="tc"><div class="tc-top" data-toggle="${t.id}">
+    <span class="dir ${ln?'dl':'ds'}">${ln?'多▲':'空▼'}</span>
+    <div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(t.instrument)}${t.symbol?` (${esc(t.symbol)})`:''}</div>
+    <div class="mono" style="font-size:12px;color:var(--tx2);">${t.entryPrice} → ${t.exitPrice}  ×${t.quantity}${t.instrument==='股票'?'股':'口'}</div></div>
+    <div style="text-align:right;flex-shrink:0;margin-right:4px;"><div class="mono ${p?'profit':'lossc'}" style="font-size:16px;font-weight:700;">${fmt(t.pnl)}</div><div style="font-size:10px;color:var(--tx2);">TWD</div></div>
+    <div class="chev${open?' op':''}">${SV.down}</div>
+  </div>
+  ${open?`<div class="tc-det">
+    ${t.imageIds&&t.imageIds.length?`<div class="imgs-wrap" data-imgs="${t.id}">${t.imageIds.map(()=>'<div class="ith-ph"></div>').join('')}</div>`:''}
+    ${t.entryLogic?`<div class="fl" style="margin-bottom:5px;">進出場邏輯</div><div class="tbox tlog">${escNl(t.entryLogic)}</div>`:''}
+    ${t.improvement?`<div class="fl-y" style="margin-bottom:5px;">${SV.bolt}改進點</div><div class="tbox timp">${escNl(t.improvement)}</div>`:''}
+    ${!t.entryLogic&&!t.improvement?`<div style="font-size:13px;color:var(--tx3);margin-bottom:10px;">點「編輯」填寫進出場邏輯與改進點</div>`:''}
+    <div class="act-row"><button class="act-edit" data-edit="${t.id}">${SV.edit} 編輯邏輯＆改進點</button><button class="act-del" data-del="${t.id}">${SV.trash}</button></div>
+  </div>`:''}
   </div>`;
 }
 
-// ── Stats ─────────────────────────────────────────────────────────────────
+// ── Stats ──────────────────────────────────────────────────
 function buildStats(){
   let mos=[...new Set(S.trades.map(t=>t.date.slice(0,7)))].sort((a,b)=>b.localeCompare(a));
   if(!mos.includes(curMo()))mos.unshift(curMo());
@@ -407,296 +262,325 @@ function buildStats(){
   const SC=(lb,val,vc)=>`<div class="sc"><div class="sc-lb">${lb}</div><div class="sc-v" style="color:${vc||'var(--tx)'};">${val}</div></div>`;
   return`<div class="pad">
     <div class="mo-row">${mos.slice(0,10).map(m=>`<button class="mo-pill${m===S.statsMonth?' on':''}" data-month="${m}">${m}</button>`).join('')}</div>
-    <div class="tot-card" style="background:${tp>=0?'var(--gbg)':'var(--rbg)'};border-color:${tp>=0?'var(--g)':'var(--r)'}">
-      <div class="tot-lb">月度損益（TWD）</div>
-      <div class="tot-amt ${tp>=0?'profit':'lossc'}">${fmt(tp)}</div>
-      <div class="tot-sub">${S.statsMonth}  ·  ${mt.length} 筆交易</div>
+    <div class="tot" style="background:${tp>=0?'var(--gbg)':'var(--rbg)'};border-color:${tp>=0?'var(--g)':'var(--r)'}">
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:4px;font-weight:500;letter-spacing:.5px;">月度損益（TWD）</div>
+      <div class="mono ${tp>=0?'profit':'lossc'}" style="font-size:32px;font-weight:700;">${fmt(tp)}</div>
+      <div style="font-size:11px;color:var(--tx2);margin-top:4px;">${S.statsMonth}  ·  ${mt.length} 筆交易</div>
     </div>
-    <div class="sg">
-      ${SC('勝率',wr+'%',wr>=50?'var(--g)':'var(--r)')}
-      ${SC('交易次數',''+mt.length)}
-      ${SC('最大獲利',best!==null&&best>0?'+'+best.toLocaleString():'--','var(--g)')}
-      ${SC('最大虧損',worst!==null&&worst<0?worst.toLocaleString():'--','var(--r)')}
-      ${SC('平均獲利',aw?'+'+aw.toLocaleString():'--','var(--g)')}
-      ${SC('平均虧損',al?al.toLocaleString():'--','var(--r)')}
-    </div>
-    ${days.length?`<div class="day-sec-hdr">每日損益明細</div>`+days.map(([d,p])=>`<div class="drow">
-      <div style="display:flex;align-items:center;gap:9px;">
-        <div class="ddot" style="background:${p>=0?'var(--g)':'var(--r)'}"></div>
-        <span class="mono" style="font-size:13px;color:var(--tx2);">${d}</span>
-      </div>
-      <span class="mono ${p>=0?'profit':'lossc'}" style="font-size:13px;font-weight:600;">${fmt(p)} TWD</span>
-    </div>`).join(''):''}
+    <div class="sg">${SC('勝率',wr+'%',wr>=50?'var(--g)':'var(--r)')}${SC('交易次數',''+mt.length)}${SC('最大獲利',best!==null&&best>0?'+'+best.toLocaleString():'--','var(--g)')}${SC('最大虧損',worst!==null&&worst<0?worst.toLocaleString():'--','var(--r)')}${SC('平均獲利',aw?'+'+aw.toLocaleString():'--','var(--g)')}${SC('平均虧損',al?al.toLocaleString():'--','var(--r)')}</div>
+    ${days.length?`<div style="font-size:11px;color:var(--tx2);font-weight:500;margin-bottom:8px;">每日損益明細</div>`+days.map(([d,p])=>`<div class="drow"><div style="display:flex;align-items:center;gap:8px;"><div class="ddot" style="background:${p>=0?'var(--g)':'var(--r)'}"></div><span class="mono" style="font-size:13px;color:var(--tx2);">${d}</span></div><span class="mono ${p>=0?'profit':'lossc'}" style="font-size:13px;font-weight:600;">${fmt(p)} TWD</span></div>`).join(''):''}
   </div>`;
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────────
-function buildModal(){
-  const isEdit=S.modal.mode==='edit';
-  const f=S.mForm;
-  const pp=calcPnL(f.instrument,f.direction,parseFloat(f.entryPrice)||0,parseFloat(f.exitPrice)||0,parseFloat(f.quantity)||0);
-  const ok=!!(f.entryPrice&&f.exitPrice&&f.quantity);
-  function pills(items,key){
-    return items.map(o=>`<button class="pill${f[key]===o.v?' '+o.ac:''}" data-key="${key}" data-val="${o.v}">${o.lb}</button>`).join('');
+// ── API Key Modal ──────────────────────────────────────────
+function buildKeyModal(){
+  const k=getKey();
+  return`<div class="m-bg"><div class="m-sheet">
+    <div class="m-han"></div>
+    <div class="m-hd"><div class="m-hd-t">🔑 Google API Key 設定</div><button class="m-x" id="mX">×</button></div>
+    <div class="m-scr">
+      <div style="background:var(--gbg);border:.5px solid var(--gbr);border-radius:var(--rad);padding:12px 13px;margin-bottom:14px;font-size:13px;line-height:1.7;color:var(--g);">
+        ✅ <b>完全免費</b>，不需信用卡！<br>使用 Google Gemini AI 分析對帳單。
+      </div>
+      <div style="font-size:13px;color:var(--tx2);line-height:1.8;margin-bottom:16px;">
+        <b>取得步驟：</b><br>
+        1. 點下方連結開啟 Google AI Studio<br>
+        2. 用 Google 帳號登入<br>
+        3. 點「Get API Key」→「Create API Key」<br>
+        4. 複製 <span style="font-family:monospace;">AIza...</span> 開頭的 Key 貼到下方
+      </div>
+      <div class="field"><div class="fl">Google API Key</div>
+        <input type="text" id="keyInput" value="${esc(k)}" placeholder="AIzaSy..." style="font-family:'SF Mono',monospace;font-size:13px;">
+      </div>
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:16px;">
+        Key 只存在手機本機，不會上傳到任何伺服器。
+      </div>
+      <button style="width:100%;padding:12px;background:var(--bbg);border:.5px solid var(--bbr);border-radius:var(--rad);color:var(--b);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;" id="keyLink">
+        🔗 開啟 Google AI Studio 取得 Key
+      </button>
+    </div>
+    <div class="m-ft"><button class="pbtn" id="btnKeySave">儲存 API Key</button></div>
+  </div></div>`;
+}
+function bindKeyModal(){
+  document.getElementById('mX')?.addEventListener('click',closeModal);
+  document.getElementById('keyLink')?.addEventListener('click',()=>window.open('https://aistudio.google.com/app/apikey'));
+  document.getElementById('btnKeySave')?.addEventListener('click',()=>{
+    const k=document.getElementById('keyInput')?.value?.trim()||'';
+    setKey(k);closeModal();
+    if(k)alert('Google API Key 已儲存！現在可以上傳對帳單自動分析了。');
+  });
+}
+
+// ── Import Modal ───────────────────────────────────────────
+function buildImportModal(){
+  const imp=S.imp,hasKey=!!getKey();
+  const parsed=imp.parsed;
+  const validCount=parsed.filter(t=>!t._skip).length;
+  let body='';
+  if(imp.state==='upload'){
+    body=`
+      ${!hasKey?`<div class="key-banner">⚠️ 未設定 Google API Key，AI 分析功能無法使用。<span class="key-link" id="goKey"> 點此免費設定</span></div>`:''}
+      <div class="field"><div class="fl">上傳對帳單截圖</div>
+        <label class="upl" for="stmtImg" style="min-height:80px;flex-direction:column;gap:6px;">
+          <span style="font-size:28px;">📷</span>
+          <span>點此選取對帳單截圖</span>
+          <input type="file" id="stmtImg" accept="image/*" style="display:none;">
+        </label>
+      </div>
+      <div style="font-size:12px;color:var(--tx2);line-height:1.7;padding:10px 12px;background:var(--card2);border-radius:var(--rad);">
+        <b>分析規則：</b><br>
+        • 相同平倉流水號 = 同一筆交易<br>
+        • 下方那行 = 開倉價<br>
+        • 紅色（買進）= 做多，綠色（賣出）= 做空<br>
+        • 微台指：1點 = 10元
+      </div>`;
+  } else if(imp.state==='loading'){
+    body=`<div class="loading-box"><div class="spinner"></div><div>AI 正在分析對帳單...<br><span style="font-size:12px;opacity:.7;">通常需要 5-10 秒</span></div></div>`;
+  } else if(imp.state==='done'){
+    body=`
+      ${imp.imgData?`<img src="${imp.imgData}" class="stmt-img" alt="對帳單">`:''}
+      ${imp.err?`<div class="err-box">${esc(imp.err)}</div>`:''}
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:10px;">AI 解析完成，共 ${parsed.length} 筆。確認後匯入：</div>
+      ${parsed.map((t,i)=>{
+        const p=t.pnl>=0;
+        return`<div class="parse-card${t._skip?' ':"'"}">
+          <div class="pc-top" style="opacity:${t._skip?'.4':'1'}">
+            <input type="checkbox" data-ci="${i}" ${t._skip?'':'checked'} style="width:18px;height:18px;flex-shrink:0;cursor:pointer;">
+            <span class="dir ${t.direction==='long'?'dl':'ds'}">${t.direction==='long'?'多▲':'空▼'}</span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:500;">${esc(t.instrument)} — ${t.date}</div>
+              <div class="mono" style="font-size:12px;color:var(--tx2);">${t.entryPrice} → ${t.exitPrice}  ×${t.quantity}口</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div class="mono ${p?'profit':'lossc'}" style="font-size:14px;font-weight:700;">${fmt(t.pnl)}</div>
+              <div style="font-size:10px;color:var(--tx2);">TWD</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}`;
   }
-  return`<div id="modal-bg">
-    <div class="m-sheet">
-      <div class="m-han"></div>
-      <div class="m-hd">
-        <div class="m-hd-t">${isEdit?'編輯交易':'新增交易記錄'}</div>
-        <button class="m-close" id="mClose">×</button>
-      </div>
-      <div class="m-scr">
-        <div class="field"><div class="fl">交易日期</div>
-          <input type="date" id="fDate" value="${f.date||today()}"></div>
-        <div class="field"><div class="fl">商品類別</div>
-          <div class="pg">${pills([{v:'台指期',lb:'台指期',ac:'ai'},{v:'小台指',lb:'小台指',ac:'ai'},{v:'股票',lb:'股票',ac:'ai'}],'instrument')}</div></div>
-        ${f.instrument==='股票'?`<div class="field"><div class="fl">股票代號</div>
-          <input type="text" id="fSym" value="${esc(f.symbol||'')}" placeholder="例：2330"></div>`:''}
-        <div class="field"><div class="fl">方向</div>
-          <div class="pg">${pills([{v:'long',lb:'多  ▲',ac:'al'},{v:'short',lb:'空  ▼',ac:'ash'}],'direction')}</div></div>
-        <div class="g3" style="margin-bottom:14px;">
-          <div><div class="fl">進場價格</div><input type="number" id="fEn" class="ni" value="${f.entryPrice||''}" placeholder="0" inputmode="decimal"></div>
-          <div><div class="fl">出場價格</div><input type="number" id="fEx" class="ni" value="${f.exitPrice||''}" placeholder="0" inputmode="decimal"></div>
-          <div><div class="fl">${f.instrument==='股票'?'股數':'口數'}</div><input type="number" id="fQty" class="ni" value="${f.quantity||''}" placeholder="1" inputmode="decimal"></div>
-        </div>
-        ${ok?`<div class="pnl-prev" style="background:${pp>=0?'var(--gbg)':'var(--rbg)'};">
-          <span style="font-size:12px;color:var(--tx2);">預估損益</span>
-          <span class="pnl-prev-amt ${pp>=0?'profit':'lossc'}">${fmt(pp)}</span>
-          <span style="font-size:12px;color:var(--tx2);">TWD</span>
-        </div>`:''}
-        <div class="field"><div class="fl">${camSvg} 圖表 / 對帳單截圖</div>
-          <label class="upl" for="fImg">${camSvg} 從相簿選取或拍照（可多張）
-            <input type="file" id="fImg" accept="image/*" multiple style="display:none;"></label>
-          ${S.mImgs.length?`<div class="m-imgs">${S.mImgs.map((img,i)=>`<div class="m-iwrap">
-            <img src="${img.data}" class="m-ith" alt="">
-            <button class="m-idel" data-mi="${i}">×</button>
-          </div>`).join('')}</div>`:''}
-        </div>
-        <div class="field"><div class="fl">進出場邏輯</div>
-          <textarea id="fLog" rows="3" placeholder="技術訊號、型態突破、進出場依據...">${esc(f.entryLogic||'')}</textarea></div>
-        <div class="field"><div class="fl-y">${boltSvg}改進點</div>
-          <textarea id="fImp" rows="3" style="border-color:var(--y);" placeholder="執行問題、心態、下次改進...">${esc(f.improvement||'')}</textarea></div>
-      </div>
-      <div class="m-ft">
-        <button class="pbtn" id="btnSave"${ok?'':' disabled'}>${isEdit?'儲存更改':'記錄交易'}</button>
-      </div>
+  return`<div class="m-bg"><div class="m-sheet">
+    <div class="m-han"></div>
+    <div class="m-hd"><div class="m-hd-t">📋 對帳單 AI 分析</div><button class="m-x" id="mX">×</button></div>
+    <div class="m-scr">${body}</div>
+    <div class="m-ft">
+      ${imp.state==='done'?`<button class="pbtn" id="btnImpSave" ${validCount?'':' disabled'}>匯入 ${validCount} 筆交易</button>`:
+        imp.state==='upload'?`<button class="pbtn ai-btn" id="btnAI" style="background:var(--pbg);color:var(--p);border:.5px solid var(--pbr);" disabled>🤖 上傳截圖後 AI 自動分析</button>`:
+        `<button class="pbtn" disabled style="opacity:.3;">分析中...</button>`}
     </div>
-  </div>`;
+  </div></div>`;
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function escNl(s){return esc(s).replace(/\n/g,'<br>');}
+async function analyzeImage(b64,mime){
+  const key=getKey();
+  if(!key)throw new Error('請先設定 Google API Key（點右上角 🔑）');
+  const prompt=`這是台灣期貨公司的「歷史沖銷查詢」對帳單截圖。請分析並提取所有已完成的交易記錄。
 
-function updatePnlPreview(){
-  const pp=calcPnL(S.mForm.instrument,S.mForm.direction,
-    parseFloat(S.mForm.entryPrice)||0,parseFloat(S.mForm.exitPrice)||0,parseFloat(S.mForm.quantity)||0);
-  const ok=!!(S.mForm.entryPrice&&S.mForm.exitPrice&&S.mForm.quantity);
-  const sb=document.getElementById('btnSave');
-  if(sb)sb.disabled=!ok;
-  let pv=document.querySelector('.pnl-prev');
-  if(ok){
-    const html=`<span style="font-size:12px;color:var(--tx2);">預估損益</span>
-      <span class="pnl-prev-amt ${pp>=0?'profit':'lossc'}">${fmt(pp)}</span>
-      <span style="font-size:12px;color:var(--tx2);">TWD</span>`;
-    if(!pv){
-      pv=document.createElement('div');pv.className='pnl-prev';
-      const g3=document.querySelector('.g3');if(g3)g3.after(pv);
+解析規則：
+1. 相同「平倉流水號」的兩行為同一筆交易
+2. 同一組中，數字排在下面的那行是開倉價（entry price）
+3. 紅色行（買進）= 做多方向（long）；綠色行（賣出）= 做空方向（short）
+4. 判斷方向：看開倉那行的買賣欄：買進=long，賣出=short
+5. 商品對照：微台期→微台指，小台→小台指，大台→台指期
+
+只回傳純 JSON 陣列，不要 markdown、不要說明文字，格式如下：
+[{"serialNo":9,"date":"2026-06-16","instrument":"微台指","direction":"long","entryPrice":45822,"exitPrice":45854,"quantity":1,"pnl":320}]
+
+pnl計算：微台指每點10元，小台指每點50元，台指期每點200元`;
+
+  const resp=await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+key,
+    {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        contents:[{parts:[
+          {inline_data:{mime_type:mime,data:b64.split(',')[1]}},
+          {text:prompt}
+        ]}],
+        generationConfig:{temperature:0,maxOutputTokens:2000}
+      })
     }
-    pv.style.background=pp>=0?'var(--gbg)':'var(--rbg)';
-    pv.innerHTML=html;
-  }else if(pv)pv.remove();
+  );
+  if(!resp.ok){const e=await resp.text();throw new Error('API 錯誤 '+resp.status+': '+e.slice(0,300));}
+  const data=await resp.json();
+  const text=data.candidates[0].content.parts[0].text.trim();
+  const clean=text.replace(/```json|```/g,'').trim();
+  return JSON.parse(clean);
 }
 
-// ── Bind Events ───────────────────────────────────────────────────────────
-function bindContent(){
-  document.querySelectorAll('[data-toggle]').forEach(el=>{
-    el.addEventListener('click',()=>{
-      const id=el.dataset.toggle;
-      S.expandedId=(S.expandedId===id)?null:id;
-      render();
-      if(S.expandedId)loadCardImages(S.expandedId);
-    });
+function bindImportModal(){
+  document.getElementById('mX')?.addEventListener('click',closeModal);
+  document.getElementById('modal').querySelector('.m-bg')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+  document.getElementById('goKey')?.addEventListener('click',()=>{closeModal();setTimeout(()=>{S.modal='key';renderModal();},100);});
+  // File upload
+  document.getElementById('stmtImg')?.addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    S.imp.imgData=await fileToB64(f);
+    S.imp.imgMime=getMime(S.imp.imgData);
+    const btn=document.getElementById('btnAI');
+    if(btn){btn.disabled=false;btn.textContent='🤖 AI 自動分析對帳單';}
   });
-  document.querySelectorAll('[data-edit]').forEach(el=>{
-    el.addEventListener('click',e=>{e.stopPropagation();openEdit(el.dataset.edit);});
-  });
-  document.querySelectorAll('[data-del]').forEach(el=>{
-    el.addEventListener('click',e=>{e.stopPropagation();doDelete(el.dataset.del);});
-  });
-  document.querySelectorAll('[data-month]').forEach(el=>{
-    el.addEventListener('click',()=>{S.statsMonth=el.dataset.month;render();});
-  });
-}
-
-function bindModal(){
-  const mc=document.getElementById('mClose');
-  if(mc)mc.addEventListener('click',closeModal);
-  const mb=document.getElementById('modal-bg');
-  if(mb)mb.addEventListener('click',e=>{if(e.target===mb)closeModal();});
-  // Pills
-  document.querySelectorAll('.pill[data-key]').forEach(el=>{
-    el.addEventListener('click',()=>{
-      syncInputsToState();
-      S.mForm[el.dataset.key]=el.dataset.val;
-      renderModal();
-    });
-  });
-  // Inputs
-  function bi(id,key){
-    const el=document.getElementById(id);
-    if(!el)return;
-    el.addEventListener('input',()=>{S.mForm[key]=el.value;updatePnlPreview();});
-  }
-  bi('fDate','date');bi('fSym','symbol');
-  bi('fEn','entryPrice');bi('fEx','exitPrice');bi('fQty','quantity');
-  bi('fLog','entryLogic');bi('fImp','improvement');
-  // Image upload
-  const fImg=document.getElementById('fImg');
-  if(fImg)fImg.addEventListener('change',async e=>{
-    const files=Array.from(e.target.files);
-    for(const f of files){
-      const data=await fileToB64(f);
-      S.mImgs.push({id:uid(),data,isNew:true});
+  // AI analyze button
+  document.getElementById('btnAI')?.addEventListener('click',async()=>{
+    if(!S.imp.imgData)return;
+    S.imp.state='loading';renderModal();
+    try{
+      const trades=await analyzeImage(S.imp.imgData,S.imp.imgMime);
+      S.imp.parsed=trades.map(t=>({...t,_skip:false}));
+      S.imp.state='done';S.imp.err='';
+    }catch(e){
+      S.imp.state='done';S.imp.err='分析失敗：'+e.message;S.imp.parsed=[];
     }
     renderModal();
   });
-  // Image delete
-  document.querySelectorAll('.m-idel[data-mi]').forEach(el=>{
-    el.addEventListener('click',e=>{
-      e.stopPropagation();
-      S.mImgs.splice(parseInt(el.dataset.mi),1);
+  // Checkboxes
+  document.querySelectorAll('input[data-ci]').forEach(el=>{
+    el.addEventListener('change',()=>{
+      S.imp.parsed[parseInt(el.dataset.ci)]._skip=!el.checked;
       renderModal();
     });
   });
-  // Save
-  const bs=document.getElementById('btnSave');
-  if(bs)bs.addEventListener('click',doSave);
+  // Import save
+  document.getElementById('btnImpSave')?.addEventListener('click',doImport);
 }
 
-// ── Load Card Images (async) ──────────────────────────────────────────────
+// ── Trade Modal ────────────────────────────────────────────
+function buildTradeModal(){
+  const isEdit=S.modal==='edit',f=S.mForm;
+  const pp=calcPnL(f.instrument,f.direction,parseFloat(f.entryPrice)||0,parseFloat(f.exitPrice)||0,parseFloat(f.quantity)||0);
+  const ok=!!(f.entryPrice&&f.exitPrice&&parseFloat(f.quantity)>0);
+  function pills(items,key){return items.map(o=>`<button class="pill${f[key]===o.v?' '+o.ac:''}" data-key="${key}" data-val="${o.v}">${o.lb}</button>`).join('');}
+  return`<div class="m-bg"><div class="m-sheet">
+    <div class="m-han"></div>
+    <div class="m-hd"><div class="m-hd-t">${isEdit?'編輯交易':'新增交易'}</div><button class="m-x" id="mX">×</button></div>
+    <div class="m-scr">
+      <div class="field"><div class="fl">交易日期</div><input type="date" id="fDate" value="${f.date||today()}"></div>
+      <div class="field"><div class="fl">商品</div><div class="pg">${pills([{v:'微台指',lb:'微台指<br><small>1pt=10元</small>',ac:'ai'},{v:'小台指',lb:'小台指<br><small>1pt=50元</small>',ac:'ai'},{v:'台指期',lb:'台指期<br><small>1pt=200元</small>',ac:'ai'}],'instrument')}</div></div>
+      ${f.instrument==='股票'?`<div class="field"><div class="fl">股票代號</div><input type="text" id="fSym" value="${esc(f.symbol||'')}" placeholder="例：2330"></div>`:''}
+      <div class="field"><div class="fl">方向</div><div class="pg">${pills([{v:'long',lb:'多  ▲',ac:'al'},{v:'short',lb:'空  ▼',ac:'ash'}],'direction')}</div></div>
+      <div class="g3" style="margin-bottom:14px;">
+        <div><div class="fl">進場價格</div><input type="number" id="fEn" class="ni" value="${f.entryPrice||''}" placeholder="0" inputmode="decimal"></div>
+        <div><div class="fl">出場價格</div><input type="number" id="fEx" class="ni" value="${f.exitPrice||''}" placeholder="0" inputmode="decimal"></div>
+        <div><div class="fl">口數</div><input type="number" id="fQty" class="ni" value="${f.quantity||'1'}" placeholder="1" inputmode="decimal"></div>
+      </div>
+      ${ok&&pp!==null?`<div class="pnl-prev" style="background:${pp>=0?'var(--gbg)':'var(--rbg)'};">
+        <span style="font-size:12px;color:var(--tx2);">預估損益</span>
+        <span class="mono ${pp>=0?'profit':'lossc'}" style="font-size:22px;font-weight:700;">${fmt(pp)}</span>
+        <span style="font-size:12px;color:var(--tx2);">TWD</span>
+      </div>`:''}
+      <div class="field"><div class="fl">${SV.cam} 圖表截圖</div>
+        <label class="upl" for="fImg">${SV.cam} 從相簿選取或拍照<input type="file" id="fImg" accept="image/*" multiple style="display:none;"></label>
+        ${S.mImgs.length?`<div class="m-imgs">${S.mImgs.map((img,i)=>`<div class="m-iwrap"><img src="${img.data}" class="m-ith" alt=""><button class="m-idel" data-mi="${i}">×</button></div>`).join('')}</div>`:''}
+      </div>
+      <div class="field"><div class="fl">進出場邏輯</div><textarea id="fLog" rows="3" placeholder="技術訊號、型態、進出場依據...">${esc(f.entryLogic||'')}</textarea></div>
+      <div class="field"><div class="fl-y">${SV.bolt}改進點</div><textarea id="fImp" rows="3" style="border-color:var(--y);" placeholder="執行問題、心態、下次改進...">${esc(f.improvement||'')}</textarea></div>
+    </div>
+    <div class="m-ft"><button class="pbtn" id="btnSave"${ok?'':' disabled'}>${isEdit?'儲存更改':'記錄交易'}</button></div>
+  </div></div>`;
+}
+function bindTradeModal(){
+  document.getElementById('mX')?.addEventListener('click',closeModal);
+  document.getElementById('modal').querySelector('.m-bg')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+  document.querySelectorAll('.pill[data-key]').forEach(el=>{el.addEventListener('click',()=>{syncForm();S.mForm[el.dataset.key]=el.dataset.val;renderModal();});});
+  function bi(id,key){const el=document.getElementById(id);if(!el)return;el.addEventListener('input',()=>{S.mForm[key]=el.value;updPnl();});}
+  bi('fDate','date');bi('fSym','symbol');bi('fEn','entryPrice');bi('fEx','exitPrice');bi('fQty','quantity');bi('fLog','entryLogic');bi('fImp','improvement');
+  document.getElementById('fImg')?.addEventListener('change',async e=>{for(const f of Array.from(e.target.files)){const d=await fileToB64(f);S.mImgs.push({id:uid(),data:d,isNew:true});}renderModal();});
+  document.querySelectorAll('.m-idel[data-mi]').forEach(el=>{el.addEventListener('click',e=>{e.stopPropagation();S.mImgs.splice(parseInt(el.dataset.mi),1);renderModal();});});
+  document.getElementById('btnSave')?.addEventListener('click',doSaveTrade);
+}
+function updPnl(){
+  const f=S.mForm;
+  const pp=calcPnL(f.instrument,f.direction,parseFloat(f.entryPrice)||0,parseFloat(f.exitPrice)||0,parseFloat(f.quantity)||0);
+  const ok=!!(f.entryPrice&&f.exitPrice&&parseFloat(f.quantity)>0);
+  const sb=document.getElementById('btnSave');if(sb)sb.disabled=!ok;
+  let pv=document.querySelector('.pnl-prev');
+  if(ok&&pp!==null){
+    const html=`<span style="font-size:12px;color:var(--tx2);">預估損益</span><span class="mono ${pp>=0?'profit':'lossc'}" style="font-size:22px;font-weight:700;">${fmt(pp)}</span><span style="font-size:12px;color:var(--tx2);">TWD</span>`;
+    if(!pv){pv=document.createElement('div');pv.className='pnl-prev';const g3=document.querySelector('.g3');if(g3)g3.after(pv);}
+    pv.style.background=pp>=0?'var(--gbg)':'var(--rbg)';pv.innerHTML=html;
+  }else if(pv)pv.remove();
+}
+
+// ── Bind Content ───────────────────────────────────────────
+function bindContent(){
+  document.querySelectorAll('[data-toggle]').forEach(el=>{el.addEventListener('click',()=>{const id=el.dataset.toggle;S.expandedId=(S.expandedId===id)?null:id;render();if(S.expandedId)loadCardImages(S.expandedId);});});
+  document.querySelectorAll('[data-edit]').forEach(el=>{el.addEventListener('click',e=>{e.stopPropagation();openEdit(el.dataset.edit);});});
+  document.querySelectorAll('[data-del]').forEach(el=>{el.addEventListener('click',e=>{e.stopPropagation();doDelete(el.dataset.del);});});
+  document.querySelectorAll('[data-month]').forEach(el=>{el.addEventListener('click',()=>{S.statsMonth=el.dataset.month;render();});});
+}
 async function loadCardImages(tradeId){
-  const t=S.trades.find(x=>x.id===tradeId);
-  if(!t||!t.imageIds||!t.imageIds.length)return;
-  const con=document.querySelector(`[data-imgs="${tradeId}"]`);
-  if(!con)return;
+  const t=S.trades.find(x=>x.id===tradeId);if(!t?.imageIds?.length)return;
+  const con=document.querySelector(`[data-imgs="${tradeId}"]`);if(!con)return;
   const imgs=await Promise.all(t.imageIds.map(id=>dbGet(id)));
-  if(!document.querySelector(`[data-imgs="${tradeId}"]`))return; // card collapsed
+  if(!document.querySelector(`[data-imgs="${tradeId}"]`))return;
   con.innerHTML=imgs.filter(Boolean).map(d=>`<img src="${d}" class="ith" alt="">`).join('');
 }
 
-// ── Actions ───────────────────────────────────────────────────────────────
+// ── Actions ────────────────────────────────────────────────
 function openAdd(){
   S.mImgs=[];
-  S.mForm={date:today(),instrument:'台指期',symbol:'',direction:'long',
-    entryPrice:'',exitPrice:'',quantity:'',entryLogic:'',improvement:''};
-  S.modal={mode:'add'};
-  renderModal();
+  S.mForm={date:today(),instrument:'微台指',symbol:'',direction:'long',entryPrice:'',exitPrice:'',quantity:'1',entryLogic:'',improvement:''};
+  S.modal='add';renderModal();
 }
-
 async function openEdit(id){
   const t=S.trades.find(x=>x.id===id);if(!t)return;
-  S.mForm={...t};
-  // Load existing images from IndexedDB
-  S.mImgs=[];
-  if(t.imageIds&&t.imageIds.length){
-    for(const imgId of t.imageIds){
-      const data=await dbGet(imgId);
-      if(data)S.mImgs.push({id:imgId,data,isNew:false});
-    }
-  }
-  S.modal={mode:'edit',id:t.id};
-  renderModal();
+  S.mForm={...t};S.mImgs=[];
+  if(t.imageIds?.length)for(const imgId of t.imageIds){const d=await dbGet(imgId);if(d)S.mImgs.push({id:imgId,data:d,isNew:false});}
+  S.editId=id;S.modal='edit';renderModal();
+}
+function openImport(){
+  S.imp={imgData:null,imgMime:'image/jpeg',state:'upload',parsed:[],err:''};
+  S.modal='import';renderModal();
+}
+function closeModal(){S.modal=null;S.editId=null;S.mImgs=[];renderModal();}
+
+async function doSaveTrade(){
+  const f=S.mForm;
+  if(!f.entryPrice||!f.exitPrice||!(parseFloat(f.quantity)>0))return;
+  const imageIds=[];
+  for(const img of S.mImgs){if(img.isNew)await dbSet(img.id,img.data);imageIds.push(img.id);}
+  if(S.modal==='edit'){const orig=S.trades.find(t=>t.id===S.editId);if(orig?.imageIds)for(const oid of orig.imageIds)if(!imageIds.includes(oid))await dbDel(oid);}
+  const p=calcPnL(f.instrument,f.direction,parseFloat(f.entryPrice),parseFloat(f.exitPrice),parseFloat(f.quantity));
+  const rec={id:S.modal==='edit'?S.editId:uid(),date:f.date||today(),instrument:f.instrument,symbol:f.symbol||'',direction:f.direction,entryPrice:parseFloat(f.entryPrice),exitPrice:parseFloat(f.exitPrice),quantity:parseFloat(f.quantity),pnl:p||0,entryLogic:f.entryLogic||'',improvement:f.improvement||'',imageIds,createdAt:S.modal==='edit'?f.createdAt:new Date().toISOString()};
+  if(S.modal==='edit')S.trades=S.trades.map(t=>t.id===rec.id?rec:t);else S.trades=[rec,...S.trades];
+  saveTrades();S.modal=null;S.editId=null;S.mImgs=[];render();
 }
 
-function closeModal(){S.modal=null;S.mImgs=[];renderModal();}
-
-async function doSave(){
-  const f=S.mForm;
-  if(!f.entryPrice||!f.exitPrice||!f.quantity)return;
-  // Save new images to IndexedDB
-  const imageIds=[];
-  for(const img of S.mImgs){
-    if(img.isNew)await dbSet(img.id,img.data);
-    imageIds.push(img.id);
-  }
-  // Delete removed images (when editing)
-  if(S.modal.mode==='edit'){
-    const origTrade=S.trades.find(t=>t.id===S.modal.id);
-    if(origTrade&&origTrade.imageIds){
-      for(const oid of origTrade.imageIds){
-        if(!imageIds.includes(oid))await dbDel(oid);
-      }
-    }
-  }
-  const rec={
-    id:S.modal.id||uid(),
-    date:f.date||today(),instrument:f.instrument,symbol:f.symbol||'',
-    direction:f.direction,
-    entryPrice:parseFloat(f.entryPrice),exitPrice:parseFloat(f.exitPrice),quantity:parseFloat(f.quantity),
-    pnl:calcPnL(f.instrument,f.direction,parseFloat(f.entryPrice),parseFloat(f.exitPrice),parseFloat(f.quantity)),
-    entryLogic:f.entryLogic||'',improvement:f.improvement||'',
-    imageIds,
-    createdAt:S.modal.mode==='edit'?f.createdAt:new Date().toISOString()
-  };
-  if(S.modal.mode==='edit'){
-    S.trades=S.trades.map(t=>t.id===rec.id?rec:t);
-  }else{
-    S.trades=[rec,...S.trades];
-  }
-  saveTrades(S.trades);
-  S.modal=null;S.mImgs=[];
-  render();
+async function doImport(){
+  const toImport=S.imp.parsed.filter(t=>!t._skip);
+  if(!toImport.length)return;
+  const newTrades=toImport.map(t=>({
+    id:uid(),date:t.date||today(),instrument:t.instrument||'微台指',
+    symbol:'',direction:t.direction,
+    entryPrice:parseFloat(t.entryPrice),exitPrice:parseFloat(t.exitPrice),
+    quantity:parseFloat(t.quantity)||1,
+    pnl:calcPnL(t.instrument||'微台指',t.direction,parseFloat(t.entryPrice),parseFloat(t.exitPrice),parseFloat(t.quantity)||1)||t.pnl||0,
+    entryLogic:'',improvement:'',imageIds:[],createdAt:new Date().toISOString()
+  }));
+  S.trades=[...newTrades,...S.trades];
+  saveTrades();S.modal=null;render();
 }
 
 async function doDelete(id){
   if(!confirm('確定刪除此筆交易？'))return;
   const t=S.trades.find(x=>x.id===id);
-  if(t&&t.imageIds)for(const imgId of t.imageIds)await dbDel(imgId);
+  if(t?.imageIds)for(const imgId of t.imageIds)await dbDel(imgId);
   S.trades=S.trades.filter(x=>x.id!==id);
   if(S.expandedId===id)S.expandedId=null;
-  saveTrades(S.trades);
-  render();
+  saveTrades();render();
 }
 
-// ── PWA Icon ──────────────────────────────────────────────────────────────
-function makeIcon(){
-  try{
-    const c=document.createElement('canvas');c.width=c.height=512;
-    const x=c.getContext('2d');
-    x.fillStyle='#111827';
-    if(x.roundRect){x.beginPath();x.roundRect(0,0,512,512,96);x.fill();}
-    else{x.fillRect(0,0,512,512);}
-    // Candlestick wicks
-    x.strokeStyle='rgba(255,255,255,.3)';x.lineWidth=10;
-    x.beginPath();x.moveTo(110,110);x.lineTo(110,420);x.stroke();
-    x.beginPath();x.moveTo(256,80);x.lineTo(256,440);x.stroke();
-    x.beginPath();x.moveTo(402,100);x.lineTo(402,430);x.stroke();
-    // Candles
-    x.fillStyle='#f87171';x.fillRect(80,180,60,160); // red
-    x.fillStyle='#34d399';x.fillRect(226,130,60,140); // green
-    x.fillStyle='#34d399';x.fillRect(372,120,60,200); // green
-    const lnk=document.createElement('link');
-    lnk.rel='apple-touch-icon';lnk.href=c.toDataURL();
-    document.head.appendChild(lnk);
-  }catch(e){}
-}
+// ── PWA Icon ───────────────────────────────────────────────
+(function(){try{const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.fillStyle='#111827';if(x.roundRect){x.beginPath();x.roundRect(0,0,512,512,100);x.fill();}else x.fillRect(0,0,512,512);x.strokeStyle='rgba(255,255,255,.25)';x.lineWidth=12;[[110,100,420],[256,70,450],[402,90,430]].forEach(([cx,t,b])=>{x.beginPath();x.moveTo(cx,t);x.lineTo(cx,b);x.stroke();});x.fillStyle='#f87171';x.fillRect(80,175,60,155);x.fillStyle='#4ade80';x.fillRect(226,130,60,135);x.fillStyle='#4ade80';x.fillRect(372,115,60,200);const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL();document.head.appendChild(l);}catch(e){}})();
 
-// ── Init ──────────────────────────────────────────────────────────────────
-makeIcon();
+// ── Init ───────────────────────────────────────────────────
 document.getElementById('btnAdd').addEventListener('click',openAdd);
+document.getElementById('btnKey').addEventListener('click',()=>{S.modal='key';renderModal();});
+document.getElementById('btnImport').addEventListener('click',openImport);
 document.getElementById('navR').addEventListener('click',()=>{S.tab='review';render();});
 document.getElementById('navS').addEventListener('click',()=>{S.tab='stats';render();});
-// Swipe down to close modal
-let touchY=0;
-document.addEventListener('touchstart',e=>{touchY=e.touches[0].clientY;},{passive:true});
-document.addEventListener('touchend',e=>{
-  if(!S.modal)return;
-  const dy=e.changedTouches[0].clientY-touchY;
-  if(dy>80){const sheet=document.querySelector('.m-sheet');if(sheet&&e.target.closest('.m-han'))closeModal();}
-},{passive:true});
-
 render();
 </script>
 </body>
