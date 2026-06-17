@@ -127,6 +127,10 @@ textarea{resize:none;line-height:1.55}
 .key-banner{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--ybg);border:.5px solid var(--ybr);border-radius:var(--rad);margin-bottom:14px;font-size:12px;color:var(--y)}
 .key-link{color:var(--b);text-decoration:underline;cursor:pointer}
 .err-box{padding:12px;background:var(--rbg);border:.5px solid var(--rbr);border-radius:var(--rad);font-size:13px;color:var(--r);margin-bottom:12px}
+.dir-tog{width:100%;padding:8px 2px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;font-family:inherit;border:.5px solid}
+.dtl{background:var(--gbg);border-color:var(--gbr);color:var(--g)}
+.dts{background:var(--rbg);border-color:var(--rbr);color:var(--r)}
+.stmt-img{width:100%;border-radius:var(--rad);border:.5px solid var(--br);max-height:220px;object-fit:contain;background:var(--card2);display:block;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -134,10 +138,7 @@ textarea{resize:none;line-height:1.55}
   <div id="hdr">
     <div class="hdr-r1">
       <div><div class="hdr-s">TRADING JOURNAL</div><div class="hdr-t">交易複盤</div></div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button class="btn-key" id="btnKey" title="API Key 設定">🔑</button>
-        <button class="btn-add" id="btnAdd">＋ 新增</button>
-      </div>
+      <button class="btn-add" id="btnAdd">＋ 新增</button>
     </div>
     <button class="imp-btn" id="btnImport">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h10M7 11h7"/></svg>
@@ -162,8 +163,8 @@ async function dbDel(id){const db=await getDB();return new Promise(res=>{const t
 // ── Storage ────────────────────────────────────────────────
 function loadTrades(){try{return JSON.parse(localStorage.getItem('tj-v5')||'[]');}catch{return[];}}
 function saveTrades(){localStorage.setItem('tj-v5',JSON.stringify(S.trades));}
-function getKey(){return localStorage.getItem('ant-key')||'';}
-function setKey(k){localStorage.setItem('ant-key',k);}
+
+
 
 // ── State ──────────────────────────────────────────────────
 const S={
@@ -273,233 +274,144 @@ function buildStats(){
 }
 
 // ── API Key Modal ──────────────────────────────────────────
-function getProvider(){return localStorage.getItem('api-provider')||'google';}
-function setProvider(p){localStorage.setItem('api-provider',p);}
-function getKeyAnt(){return localStorage.getItem('ant-key2')||'';}
-function setKeyAnt(k){localStorage.setItem('ant-key2',k);}
 
-function buildKeyModal(){
-  const prov=getProvider(),kg=getKey(),ka=getKeyAnt();
+
+// ── Import Modal (manual batch entry) ─────────────────────
+function buildImportModal(){
+  const imp=S.imp;
+  const rows=imp.rows;
+  const validRows=rows.filter(r=>r.entry&&r.exit&&parseFloat(r.qty)>0);
+  const totalPnl=validRows.reduce((s,r)=>{
+    const p=calcPnL(imp.inst,r.dir,parseFloat(r.entry),parseFloat(r.exit),parseFloat(r.qty));
+    return s+(p||0);
+  },0);
   return`<div class="m-bg"><div class="m-sheet">
     <div class="m-han"></div>
-    <div class="m-hd"><div class="m-hd-t">🔑 AI 分析設定</div><button class="m-x" id="mX">×</button></div>
+    <div class="m-hd"><div class="m-hd-t">📋 對帳單批量匯入</div><button class="m-x" id="mX">×</button></div>
     <div class="m-scr">
-      <div style="font-size:12px;color:var(--tx2);margin-bottom:12px;font-weight:500;">選擇 AI 服務</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">
-        <button id="provG" style="padding:12px 8px;border-radius:var(--rad);border:.5px solid ${prov==='google'?'var(--b)':'var(--br2)'};background:${prov==='google'?'var(--bbg)':'none'};color:${prov==='google'?'var(--b)':'var(--tx2)'};font-size:12px;font-weight:${prov==='google'?'600':'400'};cursor:pointer;font-family:inherit;line-height:1.5;">
-          Google Gemini<br><span style="font-size:10px;opacity:.8;">免費（有限額）</span>
-        </button>
-        <button id="provA" style="padding:12px 8px;border-radius:var(--rad);border:.5px solid ${prov==='anthropic'?'var(--g)':'var(--br2)'};background:${prov==='anthropic'?'var(--gbg)':'none'};color:${prov==='anthropic'?'var(--g)':'var(--tx2)'};font-size:12px;font-weight:${prov==='anthropic'?'600':'400'};cursor:pointer;font-family:inherit;line-height:1.5;">
-          Anthropic Claude<br><span style="font-size:10px;opacity:.8;">穩定（$5可用半年）</span>
-        </button>
-      </div>
-
-      ${prov==='google'?`
-      <div style="background:var(--ybg);border:.5px solid var(--ybr);border-radius:var(--rad);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--y);line-height:1.6;">
-        ⚠️ 若出現 <b>429 錯誤</b>，需前往<br>
-        console.cloud.google.com 啟用帳單（需信用卡，但仍免費）
-      </div>
-      <div class="field"><div class="fl">Google API Key（AIza...）</div>
-        <input type="text" id="keyInputG" value="${esc(kg)}" placeholder="AIzaSy..." style="font-family:'SF Mono',monospace;font-size:13px;"></div>
-      <button style="width:100%;padding:11px;background:var(--bbg);border:.5px solid var(--bbr);border-radius:var(--rad);color:var(--b);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:4px;" id="keyLink">
-        🔗 Google AI Studio 取得免費 Key
-      </button>`:`
-      <div style="background:var(--gbg);border:.5px solid var(--gbr);border-radius:var(--rad);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--g);line-height:1.6;">
-        ✅ 最穩定，每次分析約 <b>$0.01 美金</b><br>
-        $5 儲值可用約半年（每天交易）
-      </div>
-      <div class="field"><div class="fl">Anthropic API Key（sk-ant-...）</div>
-        <input type="text" id="keyInputA" value="${esc(ka)}" placeholder="sk-ant-api03-..." style="font-family:'SF Mono',monospace;font-size:13px;"></div>
-      <button style="width:100%;padding:11px;background:var(--gbg);border:.5px solid var(--gbr);border-radius:var(--rad);color:var(--g);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:4px;" id="keyLink">
-        🔗 Anthropic Console 取得 Key
-      </button>`}
-    </div>
-    <div class="m-ft"><button class="pbtn" id="btnKeySave">儲存</button></div>
-  </div></div>`;
-}
-function bindKeyModal(){
-  const prov=getProvider();
-  document.getElementById('mX')?.addEventListener('click',closeModal);
-  document.getElementById('provG')?.addEventListener('click',()=>{setProvider('google');S.modal='key';renderModal();});
-  document.getElementById('provA')?.addEventListener('click',()=>{setProvider('anthropic');S.modal='key';renderModal();});
-  document.getElementById('keyLink')?.addEventListener('click',()=>{
-    if(getProvider()==='google')window.open('https://aistudio.google.com/app/apikey');
-    else window.open('https://console.anthropic.com');
-  });
-  document.getElementById('btnKeySave')?.addEventListener('click',()=>{
-    if(getProvider()==='google'){
-      const k=document.getElementById('keyInputG')?.value?.trim()||'';
-      setKey(k);closeModal();
-      if(k)alert('Google API Key 已儲存！');
-    }else{
-      const k=document.getElementById('keyInputA')?.value?.trim()||'';
-      setKeyAnt(k);closeModal();
-      if(k)alert('Anthropic API Key 已儲存！');
-    }
-  });
-}
-
-// ── Import Modal ───────────────────────────────────────────
-function buildImportModal(){
-  const imp=S.imp,hasKey=!!getKey();
-  const parsed=imp.parsed;
-  const validCount=parsed.filter(t=>!t._skip).length;
-  let body='';
-  if(imp.state==='upload'){
-    body=`
-      ${!hasKey?`<div class="key-banner">⚠️ 未設定 API Key。<span class="key-link" id="goKey"> 點此設定（Google 免費 / Anthropic 付費更穩定）</span></div>`:''}
-      <div class="field"><div class="fl">上傳對帳單截圖</div>
-        <label class="upl" for="stmtImg" style="min-height:80px;flex-direction:column;gap:6px;">
-          <span style="font-size:28px;">📷</span>
-          <span>點此選取對帳單截圖</span>
+      ${imp.imgData?`<img src="${imp.imgData}" class="stmt-img" alt="對帳單" id="stmtPreview">`:''}
+      <div class="field"><div class="fl">${imp.imgData?'重新上傳截圖（可選）':'上傳對帳單截圖當對照（可選）'}</div>
+        <label class="upl" for="stmtImg" style="padding:10px;">
+          📷 ${imp.imgData?'更換截圖':'選取截圖'}
           <input type="file" id="stmtImg" accept="image/*" style="display:none;">
         </label>
       </div>
-      <div style="font-size:12px;color:var(--tx2);line-height:1.7;padding:10px 12px;background:var(--card2);border-radius:var(--rad);margin-bottom:10px;">
-        <b>分析規則：</b><br>
-        • 相同平倉流水號 = 同一筆交易<br>
-        • 下方那行 = 開倉價<br>
-        • 紅色（買進）= 做多，綠色（賣出）= 做空<br>
-        • 微台指：1點 = 10元
-      </div>
-      <div style="font-size:12px;color:var(--b);line-height:1.7;padding:10px 12px;background:var(--bbg);border:.5px solid var(--bbr);border-radius:var(--rad);">
-        ⚠️ <b>必須在 Safari 中開啟</b>才能使用 AI 分析<br>
-        （從「檔案 App 預覽」中無法連線外部 API）
-      </div>`;
-  } else if(imp.state==='loading'){
-    body=`<div class="loading-box"><div class="spinner"></div><div>AI 正在分析對帳單...<br><span style="font-size:12px;opacity:.7;">通常需要 5-10 秒</span></div></div>`;
-  } else if(imp.state==='done'){
-    body=`
-      ${imp.imgData?`<img src="${imp.imgData}" class="stmt-img" alt="對帳單">`:''}
-      ${imp.err?`<div class="err-box" style="white-space:pre-line;">${esc(imp.err)}</div>`:''}
-      <div style="font-size:12px;color:var(--tx2);margin-bottom:10px;">AI 解析完成，共 ${parsed.length} 筆。確認後匯入：</div>
-      ${parsed.map((t,i)=>{
-        const p=t.pnl>=0;
-        return`<div class="parse-card${t._skip?' ':"'"}">
-          <div class="pc-top" style="opacity:${t._skip?'.4':'1'}">
-            <input type="checkbox" data-ci="${i}" ${t._skip?'':'checked'} style="width:18px;height:18px;flex-shrink:0;cursor:pointer;">
-            <span class="dir ${t.direction==='long'?'dl':'ds'}">${t.direction==='long'?'多▲':'空▼'}</span>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;font-weight:500;">${esc(t.instrument)} — ${t.date}</div>
-              <div class="mono" style="font-size:12px;color:var(--tx2);">${t.entryPrice} → ${t.exitPrice}  ×${t.quantity}口</div>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-              <div class="mono ${p?'profit':'lossc'}" style="font-size:14px;font-weight:700;">${fmt(t.pnl)}</div>
-              <div style="font-size:10px;color:var(--tx2);">TWD</div>
-            </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div><div class="fl">成交日期</div><input type="date" id="impDate" value="${imp.date||today()}"></div>
+        <div><div class="fl">商品</div>
+          <div class="pg" style="gap:4px;">
+            ${['微台指','小台指','台指期'].map(v=>`<button class="pill${imp.inst===v?' ai':''}" data-inst="${v}" style="font-size:11px;padding:10px 2px;">${v}</button>`).join('')}
           </div>
-        </div>`;
-      }).join('')}`;
-  }
-  return`<div class="m-bg"><div class="m-sheet">
-    <div class="m-han"></div>
-    <div class="m-hd"><div class="m-hd-t">📋 對帳單 AI 分析</div><button class="m-x" id="mX">×</button></div>
-    <div class="m-scr">${body}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:8px;font-weight:500;">
+        對照截圖，依序輸入每筆沖銷交易 ↓
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead><tr style="font-size:11px;color:var(--tx2);text-align:center;">
+          <th style="width:26px;padding:3px 0;">#</th>
+          <th style="padding:3px 4px;">方向</th>
+          <th style="padding:3px 4px;">進場</th>
+          <th style="padding:3px 4px;">出場</th>
+          <th style="width:38px;padding:3px 2px;">口</th>
+          <th style="padding:3px 4px;text-align:right;">損益</th>
+          <th style="width:24px;"></th>
+        </tr></thead>
+        <tbody>
+        ${rows.map((r,i)=>{
+          const p=r.entry&&r.exit&&parseFloat(r.qty)>0?calcPnL(imp.inst,r.dir,parseFloat(r.entry),parseFloat(r.exit),parseFloat(r.qty)):null;
+          return`<tr data-ri="${i}">
+            <td style="text-align:center;font-size:11px;color:var(--tx3);font-family:'SF Mono',monospace;">${i+1}</td>
+            <td style="padding:3px 3px;">
+              <button class="dir-tog ${r.dir==='long'?'dtl':'dts'}" data-dtog="${i}">
+                ${r.dir==='long'?'多▲':'空▼'}
+              </button>
+            </td>
+            <td style="padding:3px 3px;"><input type="number" class="ni imp-inp" data-ri="${i}" data-rf="entry" value="${r.entry||''}" placeholder="進場" inputmode="decimal" style="font-size:13px;padding:8px 2px;"></td>
+            <td style="padding:3px 3px;"><input type="number" class="ni imp-inp" data-ri="${i}" data-rf="exit" value="${r.exit||''}" placeholder="出場" inputmode="decimal" style="font-size:13px;padding:8px 2px;"></td>
+            <td style="padding:3px 2px;"><input type="number" class="ni imp-inp" data-ri="${i}" data-rf="qty" value="${r.qty||'1'}" inputmode="decimal" style="font-size:13px;padding:8px 2px;"></td>
+            <td style="padding:3px 4px;text-align:right;font-family:'SF Mono',monospace;font-size:12px;font-weight:600;white-space:nowrap;" data-rpnl="${i}" class="${p===null?'':p>=0?'profit':'lossc'}">${p===null?'--':fmt(p)}</td>
+            <td style="padding:3px 0;text-align:center;"><button style="background:none;border:none;color:var(--tx3);font-size:16px;cursor:pointer;padding:4px;" data-rdel="${i}">×</button></td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>
+      <button id="addRow" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:none;border:.5px dashed var(--br2);border-radius:var(--rad);color:var(--tx2);font-size:13px;cursor:pointer;font-family:inherit;margin-top:8px;margin-bottom:4px;">
+        ＋ 新增一行
+      </button>
+      ${validRows.length>0?`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:${totalPnl>=0?'var(--gbg)':'var(--rbg)'};border-radius:var(--rad);margin-top:4px;">
+        <span style="font-size:12px;color:var(--tx2);">合計 ${validRows.length} 筆</span>
+        <span class="mono ${totalPnl>=0?'profit':'lossc'}" style="font-size:16px;font-weight:700;">${fmt(totalPnl)} TWD</span>
+      </div>`:''}
+    </div>
     <div class="m-ft">
-      ${imp.state==='done'?`<button class="pbtn" id="btnImpSave" ${validCount?'':' disabled'}>匯入 ${validCount} 筆交易</button>`:
-        imp.state==='upload'?`<button class="pbtn ai-btn" id="btnAI" style="background:var(--pbg);color:var(--p);border:.5px solid var(--pbr);" disabled>🤖 上傳截圖後 AI 自動分析</button>`:
-        `<button class="pbtn" disabled style="opacity:.3;">分析中...</button>`}
+      <button class="pbtn" id="btnImpSave" ${validRows.length?'':' disabled'}>
+        匯入 ${validRows.length} 筆交易
+      </button>
     </div>
   </div></div>`;
-}
-
-async function analyzeImage(b64,mime){
-  const prov=getProvider();
-  const prompt=`這是台灣期貨公司的「歷史沖銷查詢」對帳單截圖。請分析並提取所有已完成的交易記錄。
-
-解析規則：
-1. 相同「平倉流水號」的兩行為同一筆交易
-2. 同一組中，數字排在下面的那行是開倉價（entry price）
-3. 紅色行（買進）= 做多方向（long）；綠色行（賣出）= 做空方向（short）
-4. 判斷方向：看開倉那行的買賣欄：買進=long，賣出=short
-5. 商品對照：微台期→微台指，小台→小台指，大台→台指期
-
-只回傳純 JSON 陣列，不要 markdown、不要說明文字：
-[{"serialNo":9,"date":"2026-06-16","instrument":"微台指","direction":"long","entryPrice":45822,"exitPrice":45854,"quantity":1,"pnl":320}]
-
-pnl計算：微台指每點10元，小台指每點50元，台指期每點200元`;
-
-  let resp,text;
-  if(prov==='anthropic'){
-    const key=getKeyAnt();
-    if(!key)throw new Error('請先設定 Anthropic API Key（點右上角 🔑 → 選 Anthropic）');
-    resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:[
-        {type:'image',source:{type:'base64',media_type:mime,data:b64.split(',')[1]}},
-        {type:'text',text:prompt}
-      ]}]})
-    });
-    if(!resp.ok){const e=await resp.text();throw new Error('Anthropic API 錯誤 '+resp.status+': '+e.slice(0,300));}
-    const data=await resp.json();
-    text=data.content[0].text.trim();
-  }else{
-    const key=getKey();
-    if(!key)throw new Error('請先設定 Google API Key（點右上角 🔑）');
-    resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{inline_data:{mime_type:mime,data:b64.split(',')[1]}},{text:prompt}]}],generationConfig:{temperature:0,maxOutputTokens:2000}})
-    });
-    if(!resp.ok){
-      const e=await resp.text();
-      if(resp.status===429)throw new Error('Google 配額已用盡（429）
-
-解法①：等 1 分鐘再試
-解法②：點右上角 🔑 改用 Anthropic（$5，最穩定）
-解法③：到 console.cloud.google.com 啟用帳單以提高免費額度');
-      throw new Error('Google API 錯誤 '+resp.status+': '+e.slice(0,300));
-    }
-    const data=await resp.json();
-    text=data.candidates[0].content.parts[0].text.trim();
-  }
-  const clean=text.replace(/```json|```/g,'').trim();
-  return JSON.parse(clean);
 }
 
 function bindImportModal(){
   document.getElementById('mX')?.addEventListener('click',closeModal);
   document.getElementById('modal').querySelector('.m-bg')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
-  document.getElementById('goKey')?.addEventListener('click',()=>{closeModal();setTimeout(()=>{S.modal='key';renderModal();},100);});
-  // File upload
+  // Image upload
   document.getElementById('stmtImg')?.addEventListener('change',async e=>{
     const f=e.target.files[0];if(!f)return;
-    S.imp.imgData=await fileToB64(f);
-    S.imp.imgMime=getMime(S.imp.imgData);
-    const btn=document.getElementById('btnAI');
-    if(btn){btn.disabled=false;btn.textContent='🤖 AI 自動分析對帳單';}
+    S.imp.imgData=await fileToB64(f);renderModal();
   });
-  // AI analyze button
-  document.getElementById('btnAI')?.addEventListener('click',async()=>{
-    if(!S.imp.imgData)return;
-    S.imp.state='loading';renderModal();
-    try{
-      const trades=await analyzeImage(S.imp.imgData,S.imp.imgMime);
-      S.imp.parsed=trades.map(t=>({...t,_skip:false}));
-      S.imp.state='done';S.imp.err='';
-    }catch(e){
-      let msg=e.message||'';
-      if(msg.toLowerCase().includes('load failed')||msg.toLowerCase().includes('failed to fetch')||msg.toLowerCase().includes('networkerror')){
-        msg='⚠️ 網路請求被封鎖\n\n你目前在「檔案 App 預覽模式」，此模式限制對外網路連線。\n\n請這樣做：\n① 點右上角「···」→「在 Safari 中打開」\n② 或長按檔案 → 分享 → 在 Safari 中打開\n\n在 Safari 開啟後即可正常使用 AI 分析。';
-      } else if(msg.includes('400')||msg.includes('401')||msg.includes('403')){
-        msg='API Key 錯誤或無效，請點右上角 🔑 重新設定 Google API Key。';
-      }
-      S.imp.state='done';S.imp.err=msg;S.imp.parsed=[];
-    }
-    renderModal();
+  // Date
+  document.getElementById('impDate')?.addEventListener('input',e=>{S.imp.date=e.target.value;});
+  // Instrument
+  document.querySelectorAll('[data-inst]').forEach(el=>{
+    el.addEventListener('click',()=>{S.imp.inst=el.dataset.inst;renderModal();});
   });
-  // Checkboxes
-  document.querySelectorAll('input[data-ci]').forEach(el=>{
-    el.addEventListener('change',()=>{
-      S.imp.parsed[parseInt(el.dataset.ci)]._skip=!el.checked;
-      renderModal();
+  // Direction toggles
+  document.querySelectorAll('[data-dtog]').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const i=parseInt(el.dataset.dtog);
+      S.imp.rows[i].dir=S.imp.rows[i].dir==='long'?'short':'long';
+      el.className='dir-tog '+(S.imp.rows[i].dir==='long'?'dtl':'dts');
+      el.textContent=S.imp.rows[i].dir==='long'?'多▲':'空▼';
+      updateImpRow(i);
     });
   });
-  // Import save
+  // Row inputs
+  document.querySelectorAll('.imp-inp').forEach(el=>{
+    el.addEventListener('input',()=>{
+      const i=parseInt(el.dataset.ri);
+      S.imp.rows[i][el.dataset.rf]=el.value;
+      updateImpRow(i);
+    });
+  });
+  // Delete row
+  document.querySelectorAll('[data-rdel]').forEach(el=>{
+    el.addEventListener('click',()=>{S.imp.rows.splice(parseInt(el.dataset.rdel),1);renderModal();});
+  });
+  // Add row
+  document.getElementById('addRow')?.addEventListener('click',()=>{
+    S.imp.rows.push({dir:'long',entry:'',exit:'',qty:'1'});renderModal();
+  });
+  // Save
   document.getElementById('btnImpSave')?.addEventListener('click',doImport);
 }
 
+function updateImpRow(i){
+  const r=S.imp.rows[i];
+  const p=r.entry&&r.exit&&parseFloat(r.qty)>0?calcPnL(S.imp.inst,r.dir,parseFloat(r.entry),parseFloat(r.exit),parseFloat(r.qty)):null;
+  const el=document.querySelector(`[data-rpnl="${i}"]`);
+  if(el){el.textContent=p===null?'--':fmt(p);el.className=p===null?'':p>=0?'profit':'lossc';}
+  // Update totals
+  const validRows=S.imp.rows.filter(r=>r.entry&&r.exit&&parseFloat(r.qty)>0);
+  const btn=document.getElementById('btnImpSave');
+  if(btn){btn.disabled=!validRows.length;btn.textContent=`匯入 ${validRows.length} 筆交易`;}
+}
+
+// ── Key Modal (simplified - no AI) ────────────────────────
+function buildKeyModal(){return'';}
+function bindKeyModal(){}
+
+// ── (placeholder - no AI analyze) ────────────────────────
 // ── Trade Modal ────────────────────────────────────────────
 function buildTradeModal(){
   const isEdit=S.modal==='edit',f=S.mForm;
@@ -585,7 +497,7 @@ async function openEdit(id){
   S.editId=id;S.modal='edit';renderModal();
 }
 function openImport(){
-  S.imp={imgData:null,imgMime:'image/jpeg',state:'upload',parsed:[],err:''};
+  S.imp={imgData:null,date:today(),inst:'微台指',rows:Array.from({length:3},()=>({dir:'long',entry:'',exit:'',qty:'1'}))};
   S.modal='import';renderModal();
 }
 function closeModal(){S.modal=null;S.editId=null;S.mImgs=[];renderModal();}
@@ -603,16 +515,16 @@ async function doSaveTrade(){
 }
 
 async function doImport(){
-  const toImport=S.imp.parsed.filter(t=>!t._skip);
-  if(!toImport.length)return;
-  const newTrades=toImport.map(t=>({
-    id:uid(),date:t.date||today(),instrument:t.instrument||'微台指',
-    symbol:'',direction:t.direction,
-    entryPrice:parseFloat(t.entryPrice),exitPrice:parseFloat(t.exitPrice),
-    quantity:parseFloat(t.quantity)||1,
-    pnl:calcPnL(t.instrument||'微台指',t.direction,parseFloat(t.entryPrice),parseFloat(t.exitPrice),parseFloat(t.quantity)||1)||t.pnl||0,
-    entryLogic:'',improvement:'',imageIds:[],createdAt:new Date().toISOString()
-  }));
+  const imp=S.imp;
+  const validRows=imp.rows.filter(r=>r.entry&&r.exit&&parseFloat(r.qty)>0);
+  if(!validRows.length)return;
+  const newTrades=validRows.map(r=>{
+    const p=calcPnL(imp.inst,r.dir,parseFloat(r.entry),parseFloat(r.exit),parseFloat(r.qty));
+    return{id:uid(),date:imp.date||today(),instrument:imp.inst,symbol:'',
+      direction:r.dir,entryPrice:parseFloat(r.entry),exitPrice:parseFloat(r.exit),
+      quantity:parseFloat(r.qty),pnl:p||0,entryLogic:'',improvement:'',
+      imageIds:[],createdAt:new Date().toISOString()};
+  });
   S.trades=[...newTrades,...S.trades];
   saveTrades();S.modal=null;render();
 }
@@ -631,7 +543,7 @@ async function doDelete(id){
 
 // ── Init ───────────────────────────────────────────────────
 document.getElementById('btnAdd').addEventListener('click',openAdd);
-document.getElementById('btnKey').addEventListener('click',()=>{S.modal='key';renderModal();});
+
 document.getElementById('btnImport').addEventListener('click',openImport);
 document.getElementById('navR').addEventListener('click',()=>{S.tab='review';render();});
 document.getElementById('navS').addEventListener('click',()=>{S.tab='stats';render();});
